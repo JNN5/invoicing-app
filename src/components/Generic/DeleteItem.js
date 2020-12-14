@@ -39,7 +39,7 @@ export default function DeleteItem(props) {
         onClose={handleClose}
         fields={{
           id: { type: "Disabled" },
-          customerName: { type: "Disabled" },
+          Kunde: { type: "Disabled" },
         }}
         setData={setData}
         initialState={props.item}

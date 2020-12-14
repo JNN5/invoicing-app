@@ -22,6 +22,8 @@ export default function CreateLesson(props) {
 
   // make sure new data are added to state
   function setData(data) {
+    addLesson(data, props.item, props.data, props.setData);
+    /*
     let newItem = props.item;
     if (!newItem.lessons) props.item.lessons = [];
     newItem.lessons.push(data);
@@ -33,7 +35,7 @@ export default function CreateLesson(props) {
     //let newData = props.data.filter((item) => item.id !== props.item.id);
     //newData.push(data);
     console.log("newData in setData:", newData);
-    props.setData(newData);
+    props.setData(newData);*/
   }
 
   const handleClickOpen = () => {
@@ -62,6 +64,16 @@ export default function CreateLesson(props) {
       />
     </div>
   );
+}
+
+function addLesson(lesson, course, data, setData) {
+  let newItem = course;
+  if (!newItem.lessons) newItem.lessons = [];
+  newItem.lessons.push(lesson);
+
+  const newData = [...data.filter((item) => item.id !== course.id), newItem];
+
+  setData(newData);
 }
 
 // PropTypes validation
