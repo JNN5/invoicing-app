@@ -11,9 +11,9 @@ export default function EditLesson(props) {
 
   let fields = { ...props.fields };
   Object.entries(props.item)
-    .filter(([key]) => key.startsWith("Student"))
-    .forEach(([, value]) => {
-      fields[value] = { type: "String" };
+    .filter(([key]) => key !== "id")
+    .forEach(([key]) => {
+      fields[key] = { type: "String" };
     });
 
   // make sure changed cases are editet in state
