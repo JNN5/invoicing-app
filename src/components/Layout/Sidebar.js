@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
   sidebar: {
     borderRight: "1px solid #DDD",
+    backgroundColor: "#EEE",
   },
   text: {
     marginLeft: "1em",

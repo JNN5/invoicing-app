@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
   main: {
     paddingTop: "3em",
     paddingLeft: "3em",
+    backgroundColor: "#EEE",
   },
 }));
 

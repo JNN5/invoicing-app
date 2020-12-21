@@ -50,7 +50,7 @@ export default function CreateLesson(props) {
     <div>
       <Button onClick={handleClickOpen} fullWidth variant="contained">
         <Typography variant="inherit" color="initial">
-          <b>Create Lesson</b>
+          <b>Create Lessons</b>
         </Typography>
       </Button>
       <DynamicDialog
