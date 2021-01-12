@@ -1,6 +1,7 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 
+import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 
@@ -8,7 +9,14 @@ import DynamicDialog from "./DynamicDialog";
 
 import { lesson } from "../../api/dataStructures";
 
+const useStyles = makeStyles((theme) => ({
+  button: {
+    marginBottom: "1em",
+  },
+}));
+
 export default function CreateItem(props) {
+  const classes = useStyles();
   const [open, setOpen] = useState(false);
 
   // make sure new data are added to state
@@ -28,7 +36,7 @@ export default function CreateItem(props) {
   };
 
   return (
-    <div>
+    <div className={classes.button}>
       <Button
         onClick={handleClickOpen}
         variant="contained"

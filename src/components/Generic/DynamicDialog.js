@@ -17,7 +17,6 @@ import AddIcon from "@material-ui/icons/Add";
 
 import { default as useStorage } from "../../api/useLocalStorage";
 import {
-  Divider,
   FormControl,
   Grid,
   InputLabel,

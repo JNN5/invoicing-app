@@ -1,4 +1,4 @@
-import { Divider, Grid, Typography } from "@material-ui/core";
+import { Divider, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -12,14 +12,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Header() {
+export default function Header(props) {
   const classes = useStyles();
   return (
-    <Grid item xs={12} className={classes.header}>
+    <div className={props.classes.header}>
       <div className={classes.text}>
         <Typography variant="h6">Invoicing App</Typography>
       </div>
       <Divider />
-    </Grid>
+    </div>
   );
 }

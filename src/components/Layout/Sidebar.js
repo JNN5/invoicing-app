@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import { Grid, MenuItem, MenuList } from "@material-ui/core";
+import { MenuItem, MenuList } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Sidebar(props) {
   const classes = useStyles();
   return (
-    <Grid item xs={2} className={classes.sidebar}>
+    <div className={props.classes.sidebar}>
       <MenuList>
         {props.routes.map((route) => {
           return (
@@ -47,6 +47,6 @@ export default function Sidebar(props) {
           );
         })}
       </MenuList>
-    </Grid>
+    </div>
   );
 }
