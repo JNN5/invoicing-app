@@ -30,6 +30,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "white",
     width: "793.706px",
     height: "1122.52px",
+    //width: "400px",
+    //height: "500px",
     margin: "auto",
   },
   logo: {
@@ -65,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
     borderBottomStyle: "solid",
     borderBottomColor: "black",
     borderBottomWidth: "1px",
+    fontSize: "15px",
   },
   tableFirstCell: {
     textAlign: "left",
@@ -72,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
     borderBottomColor: "black",
     borderBottomWidth: "1px",
     padding: "5px",
+    fontSize: "15px",
   },
   infoGrid: {
     // gridTemplateColumns: "auto auto",
@@ -96,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
     marginRight: "auto",
     borderTopStyle: "solid",
-    borderTopWidth: "3px",
+    borderTopWidth: "2px",
     borderTopColor: "#dd2a49",
     width: "95%",
     alignContent: "center",
@@ -107,6 +111,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "0.1em",
     padding: "3px",
     color: "#333",
+    fontSize: "12px",
   },
 }));
 export default function Unterrichtsprotokoll() {
@@ -128,7 +133,10 @@ export default function Unterrichtsprotokoll() {
           //this.canvas.ownerDocument.createElement("canvas");
           const imgData = canvas.toDataURL("image/png");
           const pdf = new jsPDF();
-          pdf.addImage(imgData, "PNG", 0, 0);
+          const imgProps = pdf.getImageProperties(imgData);
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+          pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
           pdf.save("Unterrichtsprotokoll.pdf");
           console.log("saved PDF");
           //document.body.appendChild(canvas);
