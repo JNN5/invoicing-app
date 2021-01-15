@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
   header: {
     textAlign: "center",
-    backgroundColor: "#14b8b8",
+    backgroundColor: "#dd2a49",
   },
   text: {
     margin: "20px",

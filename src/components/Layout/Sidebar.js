@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
     color: "black",
     "&.active": {
-      backgroundColor: "#EEE",
+      backgroundColor: "white",
     },
   },
   menuButton: {

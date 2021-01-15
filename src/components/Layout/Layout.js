@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     gridArea: "header",
     position: "static",
     textAlign: "center",
-    backgroundColor: "#14b8b8",
+    backgroundColor: "#dd2a49",
   },
   sidebar: {
     gridArea: "sidebar",

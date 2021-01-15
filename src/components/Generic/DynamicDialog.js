@@ -212,12 +212,12 @@ function Field(props) {
             margin="normal"
             fullWidth
           >
-            <MenuItem value="">
+            <MenuItem key="null" value="">
               <em>None</em>
             </MenuItem>
             {data.map((item) => {
               return (
-                <MenuItem value={item.id}>
+                <MenuItem key={item.id} value={item.id}>
                   {item.customerName || item.id}
                 </MenuItem>
               );
