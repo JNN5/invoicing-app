@@ -28,10 +28,8 @@ const useStyles = makeStyles((theme) => ({
     gridTemplateRows: "120px 60px 100px auto 100px",
     textAlign: "center",
     backgroundColor: "white",
-    width: "793.706px",
-    height: "1122.52px",
-    //width: "400px",
-    //height: "500px",
+    width: "793.706px", // PDF A4 size
+    height: "1122.52px", // PDF A4 size
     margin: "auto",
   },
   logo: {
@@ -49,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
   tableContainer: {
     verticalAlign: "top",
     marginTop: "2em",
-    //height: "800px",
   },
   table: {
     marginLeft: "20%",
