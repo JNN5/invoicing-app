@@ -24,7 +24,7 @@ export default function CreateItem(props) {
     // create a lesson for each week within the defined dates
     const lessons = createLessons(data.Start_Datum, data.Ende_Datum, data);
     const newData = { ...data, lessons: lessons };
-    props.setData([...props.data, newData]);
+    props.functions.updateItem([...props.data, newData]);
   }
 
   const handleClickOpen = () => {

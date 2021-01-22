@@ -69,6 +69,18 @@ export default function DynamicDialog(props) {
     );
   }
 
+  const fieldList = Object.entries(fields).map(([key, value]) => (
+    <Field
+      key={key + "-" + value}
+      name={key}
+      field={value}
+      row={row}
+      setRow={setRow}
+      fields={fields}
+      setFields={setFields}
+    />
+  ));
+
   return (
     <Dialog
       onClose={handleCancel}
@@ -76,19 +88,7 @@ export default function DynamicDialog(props) {
       open={props.open}
     >
       <DialogTitle id="create-dialog">{props.action} Dialog</DialogTitle>
-      <DialogContent>
-        {Object.entries(fields).map(([key, value]) => (
-          <Field
-            key={key + "-" + value}
-            name={key}
-            field={value}
-            row={row}
-            setRow={setRow}
-            fields={fields}
-            setFields={setFields}
-          />
-        ))}
-      </DialogContent>
+      <DialogContent>{fieldList}</DialogContent>
       {Error}
       <DialogActions>
         <ButtonGroup fullWidth variant="contained">

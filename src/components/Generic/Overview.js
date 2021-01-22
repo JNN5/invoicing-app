@@ -24,7 +24,7 @@ export default function Overview(props) {
           setData={props.setData}
         />
         <Grid container spacing={3}>
-          {props.data.map((item) => {
+          {props.data?.map((item) => {
             if (props.listItem) {
               const ListItem = props.listItem;
               return (

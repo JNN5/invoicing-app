@@ -21,54 +21,38 @@ const useStyles = makeStyles((theme) => ({
 export default function ItemCard(props) {
   const classes = useStyles();
 
+  const courseItemContent = Object.entries(props.item)
+    .filter(([key]) => {
+      if (key === "id" || key.startsWith("Student") || key === "lessons")
+        return false;
+      return true;
+    })
+    .map(([key, value]) => {
+      return (
+        <Grid container spacing={1}>
+          <Grid item xs={4} key={key}>
+            {key}
+          </Grid>
+          <Grid item xs={5} key={value} className={classes.mainText}>
+            {value}
+          </Grid>
+        </Grid>
+      );
+    });
+
   return (
     <Grid key={props.item.id} item xs={12} sm={6}>
       <Paper className={classes.paper}>
         <Grid container spacing={1}>
           <Grid item xs={9}>
-            {Object.entries(props.item)
-              .filter(([key, value]) => {
-                if (
-                  key === "id" ||
-                  key.startsWith("Student") ||
-                  key === "lessons"
-                )
-                  return false;
-                return true;
-              })
-              .map(([key, value]) => {
-                return (
-                  <Grid container spacing={1}>
-                    <Grid item xs={4} key={key}>
-                      {key}
-                    </Grid>
-                    <Grid item xs={5} key={value} className={classes.mainText}>
-                      {value}
-                    </Grid>
-                  </Grid>
-                );
-              })}
+            {courseItemContent}
           </Grid>
           <Grid item xs={3}>
-            <EditItem
-              fields={props.dataStructure}
-              data={props.data}
-              item={props.item}
-              setData={props.setData}
-            />
-            <DeleteItem
-              data={props.data}
-              item={props.item}
-              setData={props.setData}
-            />
+            <EditItem item={props.item} />
+            <DeleteItem item={props.item} />
           </Grid>
           <Grid item xs={12}>
-            <CreateLesson
-              fields={props.dataStructure}
-              data={props.data}
-              item={props.item}
-              setData={props.setData}
-            />
+            <CreateLesson />
           </Grid>
         </Grid>
       </Paper>
@@ -79,7 +63,4 @@ export default function ItemCard(props) {
 // PropTypes validation
 ItemCard.propTypes = {
   item: PropTypes.object.isRequired,
-  dataStructure: PropTypes.object.isRequired,
-  data: PropTypes.array.isRequired,
-  setData: PropTypes.func.isRequired,
 };

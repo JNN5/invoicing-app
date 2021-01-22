@@ -8,7 +8,7 @@ import Overview from "../Generic/Overview";
 import LessonItem from "./LessonItem";
 
 export default function Lesson() {
-  const [data, setData] = useLocalStorage("courses", []);
+  const { data, setData } = useLocalStorage("courses", []);
   const [filteredData, setFilteredData] = useState([]);
   const [filter, setFilter] = useState(() => {
     const now = new Date();
@@ -25,7 +25,7 @@ export default function Lesson() {
     console.log(filter);
     console.log(data);
     setFilteredData(
-      data.map((course) => {
+      data?.map((course) => {
         const filteredLessons = course.lessons.filter((item) =>
           item.datum.includes(filter)
         );
@@ -54,7 +54,7 @@ export default function Lesson() {
       <TextField
         id="filter"
         key="filter"
-        label="Monat"
+        label="Monat (YYYY-MM)"
         value={filter}
         onChange={handleFilterChange}
         margin="normal"

@@ -1,6 +1,7 @@
 import Lesson from "../Lesson/Lesson";
 import Courses from "../Course/Courses";
 import Unterrichtsprotokoll from "../PDFs/Unterrichtsprotokoll";
+import DBTest from "../PDFs/DBTest";
 import AccountsIcon from "@material-ui/icons/Cloud";
 
 export const routes = [
@@ -11,5 +12,11 @@ export const routes = [
     component: Unterrichtsprotokoll,
     icon: AccountsIcon,
     path: "/unterrichtsprotokoll",
+  },
+  {
+    name: "DBTest",
+    component: DBTest,
+    icon: AccountsIcon,
+    path: "/dbtest",
   },
 ];

@@ -47,12 +47,12 @@ export default function ItemCard(props) {
               fields={props.dataStructure}
               data={props.data}
               item={props.item}
-              setData={props.setData}
+              functions={props.functions}
             />
             <DeleteItem
               data={props.data}
               item={props.item}
-              setData={props.setData}
+              functions={props.functions}
             />
           </Grid>
         </Grid>
@@ -66,5 +66,5 @@ ItemCard.propTypes = {
   item: PropTypes.object.isRequired,
   dataStructure: PropTypes.object.isRequired,
   data: PropTypes.array.isRequired,
-  setData: PropTypes.func.isRequired,
+  functions: PropTypes.object.isRequired,
 };
