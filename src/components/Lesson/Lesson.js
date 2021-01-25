@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import useLocalStorage from "../../api/useLocalStorage";
-import { courses as dataStructure } from "../../api/dataStructures";
 
 import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
 
-import Overview from "../Generic/Overview";
 import LessonItem from "./LessonItem";
 
 export default function Lesson() {
-  const { data, setData } = useLocalStorage("courses", []);
+  const [courses] = useLocalStorage("courses");
   const [filteredData, setFilteredData] = useState([]);
   const [filter, setFilter] = useState(() => {
     const now = new Date();
@@ -19,38 +18,30 @@ export default function Lesson() {
     setFilter(event.target.value);
   };
 
-  console.log(filteredData);
+  console.log("Lessons render");
 
   useEffect(() => {
     console.log(filter);
-    console.log(data);
+    console.log(courses);
     setFilteredData(
-      data?.map((course) => {
+      courses?.map((course) => {
         const filteredLessons = course.lessons.filter((item) =>
           item.datum.includes(filter)
         );
         return { ...course, lessons: filteredLessons };
       })
     );
-  }, [data, filter]);
+  }, [courses, filter]);
 
-  /*const wochentag = [
-    "Sontag",
-    "Montag",
-    "Dienstag",
-    "Mittwoch",
-    "Donnerstag",
-    "Freitag",
-    "Samstag",
-  ];*/
-  /*.map((course) => {
-      return course.lessons.map((lesson) => {
-        return lesson;
-      });
-    })*/
+  const lessonList = filteredData?.map((lesson) => {
+    return (
+      <LessonItem key={lesson.id || JSON.stringify(lesson)} item={lesson} />
+    );
+  });
 
   return (
     <div>
+      <h4>Lessons</h4>
       <TextField
         id="filter"
         key="filter"
@@ -59,40 +50,9 @@ export default function Lesson() {
         onChange={handleFilterChange}
         margin="normal"
       />
-      <Overview
-        dataStructure={dataStructure}
-        data={filteredData}
-        setData={setData}
-        header="Lessons"
-        listItem={LessonItem}
-      />
+      <Grid container spacing={3}>
+        {lessonList}
+      </Grid>
     </div>
   );
-
-  /*return (
-    <TableContainer component={Paper}>
-      <Table aria-label="Tabelle">
-        <TableHead>
-          <TableRow>
-            <TableCell align="left">Kursnummer</TableCell>
-            <TableCell align="left">Kunde</TableCell>
-            <TableCell align="left">Datum</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {lessons.map((lesson) => (
-            <TableRow key={lesson.id}>
-              <TableCell align="left">{lesson.Kursnummer}</TableCell>
-              <TableCell align="left">{lesson.Kunde}</TableCell>
-              <TableCell align="left" component="th" scope="row">
-                {wochentag[new Date(lesson.datum).getDay()] +
-                  " " +
-                  lesson.datum}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );*/
 }

@@ -14,6 +14,8 @@ import TableRow from "@material-ui/core/TableRow";
 import PrintIcon from "@material-ui/icons/Print";
 
 import logo from "./Logo Antipolis.png";
+import signature from "./Signature-Tiffy.png";
+import useLocalStorage from "../../api/useLocalStorage";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -49,9 +51,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "2em",
   },
   table: {
-    marginLeft: "20%",
-    marginRight: "20%",
-    width: "60%",
+    marginLeft: "15%",
+    marginRight: "15%",
+    width: "70%",
   },
   tableCell: {
     textAlign: "left",
@@ -65,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
     borderBottomColor: "black",
     borderBottomWidth: "1px",
     fontSize: "15px",
+    maxWidth: "200px",
   },
   tableFirstCell: {
     textAlign: "left",
@@ -73,13 +76,17 @@ const useStyles = makeStyles((theme) => ({
     borderBottomWidth: "1px",
     padding: "5px",
     fontSize: "15px",
+    width: "70px",
+  },
+  signature: {
+    width: "80px",
   },
   infoGrid: {
     // gridTemplateColumns: "auto auto",
     // gridGap: "4em",
     padding: "2em",
     marginTop: "3em",
-    marginBottom: "2em",
+    marginBottom: "2.5em",
   },
   textLeft: {
     display: "inline-block",
@@ -108,35 +115,57 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "0.1em",
     padding: "3px",
     color: "#333",
-    fontSize: "12px",
+    fontSize: "11px",
+    paddingTop: "0px",
+    paddingBottom: "0px",
+    marginTop: "0px",
+    marginBottom: "0px",
   },
 }));
 export default function Unterrichtsprotokoll() {
+  // const classes = useStyles();
+  const [courses] = useLocalStorage("courses");
+
+  const sampleCourse = courses[1];
+  const sampleFilteredLessons = sampleCourse.lessons.filter((lesson) =>
+    lesson.datum.includes("2021-01")
+  );
+  const sampleInput = {
+    ...sampleCourse,
+    lessons: sampleFilteredLessons,
+  };
+
+  console.log("sampleInput: ", sampleInput);
+
+  return (
+    <div>
+      <Print
+        elementId="UnterrichtsprotokollPDF"
+        documentName="Unterrichtsprotokoll.pdf"
+      />
+      <MyPDF course={sampleInput} />
+    </div>
+  );
+}
+
+function Print(props) {
   const classes = useStyles();
   const [print, setPrint] = useState(false);
 
   useEffect(() => {
     if (print) {
-      const input = document.getElementById("UnterrichtsprotokollPDF");
-      //console.log(document.getElementById("UnterrichtsprotokollPDF"));
-
-      /*const options = {
-        width: "793.706",
-        height: "1122.52",
-      };*/
+      const input = document.getElementById(props.elementId);
 
       html2canvas(input)
         .then((canvas) => {
-          //this.canvas.ownerDocument.createElement("canvas");
           const imgData = canvas.toDataURL("image/png");
           const pdf = new jsPDF();
           const imgProps = pdf.getImageProperties(imgData);
           const pdfWidth = pdf.internal.pageSize.getWidth();
           const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
           pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-          pdf.save("Unterrichtsprotokoll.pdf");
+          pdf.save(props.documentName);
           console.log("saved PDF");
-          //document.body.appendChild(canvas);
           setPrint(false);
         })
         .catch((error) => console.log(error));
@@ -155,7 +184,6 @@ export default function Unterrichtsprotokoll() {
         startIcon={<PrintIcon />}
         className={classes.button}
       />
-      <MyPDF />
     </div>
   );
 }
@@ -179,24 +207,24 @@ function MyPDF(props) {
           color="initial"
           className={classes.textLeft}
         >
-          Kursnummer: ____270 1603____
+          Kursnummer: ____{props.course?.Kursnummer || "270 1603"}____
         </Typography>
         <Typography
           variant="inherit"
           color="initial"
           className={classes.textRight}
         >
-          Dozentin: ____TIFFANY NEUMANN____
+          Dozentin: ____{props.course?.Dozentin || "TIFFANY NEUMANN"}____
         </Typography>
       </div>
       <MyTable
-        rows={[
-          { name: "Group" },
-          { name: "test" },
-          { name: "test" },
-          { name: "test" },
-          { name: "test" },
-        ]}
+        rows={props.course?.lessons?.map((lesson) => {
+          return {
+            ...lesson,
+            ort: props.course.Kunde,
+            time: props.course.Zeit,
+          };
+        })}
       />
       <div className={classes.footer}>
         <div>
@@ -249,34 +277,45 @@ function MyTable(props) {
       );
     return <PrettyTableCell key={text}>{text}</PrettyTableCell>;
   });
+
+  const formatDate = (date) => {
+    return (
+      date.substring(8, 10) +
+      "." +
+      date.substring(5, 7) +
+      "." +
+      date.substring(0, 4)
+    );
+  };
   return (
     <div className={classes.tableContainer}>
       <Table className={classes.table} aria-label="caption table">
         <TableHead>
-          <TableRow>{TableHeaderCells}</TableRow>
+          <TableRow key="headers">{TableHeaderCells}</TableRow>
         </TableHead>
         <TableBody>
-          {props.rows.map((row, index) => (
+          {props.rows?.map((row, index) => (
             <TableRow key={row.name + index}>
               <PrettyTableCell
-                key={index + 1}
+                key={index + row.ort}
                 first={true}
                 component="th"
                 scope="row"
               >
-                {row.name}
+                {row.ort}
               </PrettyTableCell>
-              <PrettyTableCell key={index + 2} align="left">
-                {row.name}
+              <PrettyTableCell key={index + row.datum} align="left">
+                {formatDate(row.datum)}
               </PrettyTableCell>
-              <PrettyTableCell key={index + 3} align="left">
-                {row.name}
+              <PrettyTableCell key={index + row.time} align="left">
+                {row.time}
               </PrettyTableCell>
-              <PrettyTableCell key={index + 4} align="left">
-                {row.name}
+              <PrettyTableCell key={index + row.Unterrichtsinhalt} align="left">
+                {row.Unterrichtsinhalt ||
+                  "aaaaaaaafhjadfsja slkdjhas kld jfhal ksd fhalk sjdf hlweiu fhla skjdbl ia wuef balisudbf ai lw uefbl aksd jfba liweufb galsk dj fbalwie ufbgl skdjf baeil uwfblsi"}
               </PrettyTableCell>
-              <PrettyTableCell key={index + 5} align="left">
-                {row.name}
+              <PrettyTableCell key={index + "signature"} align="left">
+                <img src={signature} alt="Logo" className={classes.signature} />
               </PrettyTableCell>
             </TableRow>
           ))}

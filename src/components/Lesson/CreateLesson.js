@@ -7,8 +7,10 @@ import DynamicDialog from "../Generic/DynamicDialog";
 import { Typography } from "@material-ui/core";
 
 import { lesson } from "../../api/dataStructures";
+import useLocalStorage from "../../api/useLocalStorage";
 
 export default function CreateLesson(props) {
+  const [courses, functions] = useLocalStorage("courses");
   const [open, setOpen] = useState(false);
 
   // adding Students to data by creating a key value pair for each student: {Name: Anwesenheit}
@@ -18,11 +20,10 @@ export default function CreateLesson(props) {
     .forEach(([, value]) => {
       fields[value] = { type: "String" };
     });
-  console.log(fields);
 
   // make sure new data are added to state
   function setData(data) {
-    addLesson(data, props.item, props.data, props.setData);
+    addLesson(data, props.item, courses, functions.updateItem);
     /*
     let newItem = props.item;
     if (!newItem.lessons) props.item.lessons = [];
@@ -50,7 +51,7 @@ export default function CreateLesson(props) {
     <div>
       <Button onClick={handleClickOpen} fullWidth variant="contained">
         <Typography variant="inherit" color="initial">
-          <b>Create Lessons</b>
+          <b>Create Lesson</b>
         </Typography>
       </Button>
       <DynamicDialog
@@ -66,20 +67,20 @@ export default function CreateLesson(props) {
   );
 }
 
-function addLesson(lesson, course, data, setData) {
+function addLesson(lesson, course, courses, updateCourse) {
   let newItem = course;
   if (!newItem.lessons) newItem.lessons = [];
   newItem.lessons.push(lesson);
 
-  const newData = [...data.filter((item) => item.id !== course.id), newItem];
+  const updatedCourses = [
+    ...courses.filter((item) => item.id !== course.id),
+    newItem,
+  ];
 
-  setData(newData);
+  updateCourse(updatedCourses);
 }
 
 // PropTypes validation
 CreateLesson.propTypes = {
-  fields: PropTypes.object.isRequired,
   item: PropTypes.object.isRequired,
-  data: PropTypes.array.isRequired,
-  setData: PropTypes.func.isRequired,
 };

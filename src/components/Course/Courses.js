@@ -21,6 +21,8 @@ export default function Courses() {
     return 0;
   });
 
+  console.log("Courses render");
+
   const itemList = sortedData?.map((item) => {
     return <CourseItem key={item.id || JSON.stringify(item)} item={item} />;
   });
@@ -28,7 +30,7 @@ export default function Courses() {
   return (
     <div className="Overview">
       <div className={classes.root}>
-        <h4>"Courses"</h4>
+        <h4>Courses</h4>
         <CreateCourse />
         <Grid container spacing={3}>
           {itemList}

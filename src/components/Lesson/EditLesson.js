@@ -6,10 +6,14 @@ import EditIcon from "@material-ui/icons/Edit";
 
 import DynamicDialog from "../Generic/DynamicDialog";
 
+import { lesson as fieldStructure } from "../../api/dataStructures";
+import useLocalStorage from "../../api/useLocalStorage";
+
 export default function EditLesson(props) {
+  const [courses, functions] = useLocalStorage("courses");
   const [open, setOpen] = useState(false);
 
-  let fields = { ...props.fields };
+  let fields = { ...fieldStructure };
   Object.entries(props.item)
     .filter(([key]) => key !== "id")
     .forEach(([key]) => {
@@ -17,14 +21,17 @@ export default function EditLesson(props) {
     });
 
   // make sure changed cases are editet in state
-  function setData(data) {
-    const newItem = { ...props.item, lessons: props.item.lessons.push(data) };
-    const newData = [
-      ...props.data.filter((item) => item.id !== props.item.id),
-      newItem,
+  function setData(updatedLesson) {
+    const updatedCourse = {
+      ...props.item,
+      lessons: props.item.lessons.push(updatedLesson),
+    };
+    const updatedCourses = [
+      ...courses.filter((course) => course.id !== props.item.id),
+      updatedCourse,
     ];
-    console.log("newData in setData:", newData);
-    props.setData(newData);
+    console.log("updatedCourses in EditLesson", updatedCourses);
+    functions.updateItem(updatedCourses);
   }
 
   const handleClickOpen = () => {
@@ -86,8 +93,5 @@ function formatDate(date) {
 
 // PropTypes validation
 EditLesson.propTypes = {
-  fields: PropTypes.object.isRequired,
   item: PropTypes.object.isRequired,
-  data: PropTypes.array.isRequired,
-  setData: PropTypes.func.isRequired,
 };

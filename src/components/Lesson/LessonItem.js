@@ -5,7 +5,6 @@ import Grid from "@material-ui/core/Grid";
 import { Typography } from "@material-ui/core";
 
 import EditLesson from "./EditLesson";
-import { lesson as dataStructure } from "../../api/dataStructures";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -28,13 +27,8 @@ export default function ItemCard(props) {
     if (props.item.lessons) {
       return props.item.lessons.map((lesson) => {
         return (
-          <Grid item xs={5}>
-            <EditLesson
-              item={lesson}
-              data={props.data}
-              setData={props.setData}
-              fields={dataStructure}
-            />
+          <Grid item xs={5} key={lesson.datum}>
+            <EditLesson item={lesson} />
           </Grid>
         );
       });
@@ -54,7 +48,7 @@ export default function ItemCard(props) {
               color="textPrimary"
               className={classes.title}
             >
-              {props.item.Kursnummer + " - " + props.item.Kunde}
+              {props.item.Kunde + " (" + props.item.Kursnummer + ")"}
             </Typography>
           </Grid>
           <List />
@@ -67,7 +61,4 @@ export default function ItemCard(props) {
 // PropTypes validation
 ItemCard.propTypes = {
   item: PropTypes.object.isRequired,
-  dataStructure: PropTypes.object.isRequired,
-  data: PropTypes.array.isRequired,
-  setData: PropTypes.func.isRequired,
 };

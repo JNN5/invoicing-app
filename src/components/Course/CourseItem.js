@@ -3,8 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 
-import EditItem from "../Generic/EditItem";
-import DeleteItem from "../Generic/DeleteItem";
+import EditCourse from "./EditCourse";
+import DeleteCourse from "./DeleteCourse";
 import CreateLesson from "../Lesson/CreateLesson";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +29,7 @@ export default function ItemCard(props) {
     })
     .map(([key, value]) => {
       return (
-        <Grid container spacing={1}>
+        <Grid container spacing={1} key={key + "container"}>
           <Grid item xs={4} key={key}>
             {key}
           </Grid>
@@ -48,11 +48,11 @@ export default function ItemCard(props) {
             {courseItemContent}
           </Grid>
           <Grid item xs={3}>
-            <EditItem item={props.item} />
-            <DeleteItem item={props.item} />
+            <EditCourse item={props.item} />
+            <DeleteCourse item={props.item} />
           </Grid>
           <Grid item xs={12}>
-            <CreateLesson />
+            <CreateLesson item={props.item} />
           </Grid>
         </Grid>
       </Paper>
