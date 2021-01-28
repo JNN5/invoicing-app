@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+/*import { useState, useCallback } from "react";
 
 import {
   DynamoDBClient,
@@ -144,4 +144,4 @@ async function delFunction(params, stateObj) {
   } catch (error) {
     console.log(error);
   }
-}
+}*/

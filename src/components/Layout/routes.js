@@ -2,7 +2,7 @@ import Lesson from "../Lesson/Lesson";
 import Courses from "../Course/Courses";
 import Unterrichtsprotokoll from "../PDFs/Unterrichtsprotokoll";
 import Anwesenheitsliste from "../PDFs/Anwesenheitsliste";
-import FahrtkostenExcel from "../PDFs/FahrtkostenExcel";
+import FahrtkostenExcel from "../PDFs/FahrtkostenExcel/FahrtkostenExcel";
 import DBTest from "../PDFs/DBTest";
 import AccountsIcon from "@material-ui/icons/Cloud";
 
