@@ -3,7 +3,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Typography } from "@material-ui/core";
+import { Button, Typography, TextField } from "@material-ui/core";
 
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -12,12 +12,20 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
 import PrintIcon from "@material-ui/icons/Print";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 import logo from "./Logo Antipolis.png";
 import signature from "./Signature-Tiffy.png";
 import useLocalStorage from "../../api/useLocalStorage";
 
 const useStyles = makeStyles((theme) => ({
+  date: {
+    display: "block",
+    width: "10%",
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginBottom: "2em",
+  },
   button: {
     display: "block",
     width: "10%",
@@ -123,10 +131,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export default function Unterrichtsprotokoll() {
-  // const classes = useStyles();
+  const classes = useStyles();
   const [courses] = useLocalStorage("courses");
+  const [month, setMonth] = useState(() => {
+    const now = new Date();
+    return now.getFullYear() + "-" + now.getMonth() + 1;
+  });
 
-  const sampleCourse = courses[1];
+  const handleMonthChange = (e) => {
+    setMonth(e.target.value);
+  };
+
+  /*const sampleCourse = courses[1];
   const sampleFilteredLessons = sampleCourse.lessons.filter((lesson) =>
     lesson.datum.includes("2021-01")
   );
@@ -135,15 +151,36 @@ export default function Unterrichtsprotokoll() {
     lessons: sampleFilteredLessons,
   };
 
-  console.log("sampleInput: ", sampleInput);
+  console.log("sampleInput: ", sampleInput);*/
+
+  const pdfs = courses.map((course) => {
+    const filteredLessons = course.lessons?.filter((lesson) =>
+      lesson.datum.includes(month)
+    );
+    return (
+      <MyPDF key={course.id} course={{ ...course, lessons: filteredLessons }} />
+    );
+  });
 
   return (
     <div>
-      <Print
-        elementId="UnterrichtsprotokollPDF"
-        documentName="Unterrichtsprotokoll.pdf"
+      <TextField
+        id="filter"
+        key="filter"
+        label="Monat (YYYY-MM)"
+        value={month}
+        onChange={handleMonthChange}
+        margin="normal"
+        className={classes.date}
       />
-      <MyPDF course={sampleInput} />
+      <Print
+        //elementId="UnterrichtsprotokollPDF"
+        elementId="PDFs"
+        courseIds={courses.map((c) => c.id)}
+        documentName={"Minutes_" + month + ".pdf"}
+      />
+      {/*<MyPDF course={sampleInput} />*/}
+      <div id="PDFs">{pdfs}</div>
     </div>
   );
 }
@@ -151,26 +188,21 @@ export default function Unterrichtsprotokoll() {
 function Print(props) {
   const classes = useStyles();
   const [print, setPrint] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (print) {
-      const input = document.getElementById(props.elementId);
+      setIsLoading(true);
 
-      html2canvas(input)
-        .then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-          const pdf = new jsPDF();
-          const imgProps = pdf.getImageProperties(imgData);
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-          pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-          pdf.save(props.documentName);
+      printPDFs(props.courseIds, props.documentName)
+        .then(() => {
           console.log("saved PDF");
           setPrint(false);
+          setIsLoading(false);
         })
         .catch((error) => console.log(error));
     }
-  });
+  }, [print, props.documentName, props.courseIds]);
 
   function handleButton() {
     setPrint(true);
@@ -178,21 +210,52 @@ function Print(props) {
 
   return (
     <div>
-      <Button
-        onClick={handleButton}
-        variant="contained"
-        startIcon={<PrintIcon />}
-        className={classes.button}
-      />
+      {isLoading ? (
+        <Button
+          onClick={handleButton}
+          variant="contained"
+          startIcon={<CircularProgress />}
+          disabled
+          className={classes.button}
+        />
+      ) : (
+        <Button
+          onClick={handleButton}
+          variant="contained"
+          startIcon={<PrintIcon />}
+          className={classes.button}
+        />
+      )}
     </div>
   );
+}
+
+async function printPDFs(courseIds, documentName) {
+  const pdf = new jsPDF();
+
+  await courseIds?.reduce(async (memo, id, index) => {
+    await memo;
+    const input = document.getElementById(id);
+    const canvas = await html2canvas(input);
+    const imgData = canvas.toDataURL("image/png");
+    if (index >= 1) pdf.addPage();
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  }, undefined);
+
+  pdf.save(documentName);
 }
 
 function MyPDF(props) {
   const classes = useStyles();
   //const data = "test";
   return (
-    <div id="UnterrichtsprotokollPDF" className={classes.root}>
+    <div
+      id={props.course.id}
+      /*id="UnterrichtsprotokollPDF"*/ className={classes.root}
+    >
       <div className={classes.header}>
         <img src={logo} alt="Logo" className={classes.logo} />
       </div>

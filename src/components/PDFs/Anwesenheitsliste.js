@@ -12,6 +12,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
 import PrintIcon from "@material-ui/icons/Print";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 import logo from "./Logo Antipolis.png";
 import useLocalStorage from "../../api/useLocalStorage";
@@ -149,25 +150,25 @@ export default function Anwesenheitsliste() {
   // const classes = useStyles();
   const [courses] = useLocalStorage("courses");
 
-  const sampleCourse = courses[1];
-  const sampleFilteredLessons = sampleCourse.lessons.filter((lesson) =>
-    lesson.datum.includes("2021-01")
-  );
-  const sampleInput = {
-    ...sampleCourse,
-    lessons: sampleFilteredLessons,
-    month: "Jan 2021",
-  };
-
-  console.log("sampleInput: ", sampleInput);
+  const pdfs = courses.map((course) => {
+    const filteredLessons = course.lessons?.filter((lesson) =>
+      lesson.datum.includes("2021-01")
+    );
+    return (
+      <MyPDF key={course.id} course={{ ...course, lessons: filteredLessons }} />
+    );
+  });
 
   return (
     <div>
       <Print
-        elementId="AnwesenheitslistePDF"
+        //elementId="UnterrichtsprotokollPDF"
+        //elementId="PDFs"
+        courseIds={courses.map((c) => c.id)}
         documentName="Anwesenheitsliste.pdf"
       />
-      <MyPDF course={sampleInput} />
+      {/*<MyPDF course={sampleInput} />*/}
+      <div id="PDFs">{pdfs}</div>
     </div>
   );
 }
@@ -175,26 +176,21 @@ export default function Anwesenheitsliste() {
 function Print(props) {
   const classes = useStyles();
   const [print, setPrint] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (print) {
-      const input = document.getElementById(props.elementId);
+      setIsLoading(true);
 
-      html2canvas(input)
-        .then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-          const pdf = new jsPDF();
-          const imgProps = pdf.getImageProperties(imgData);
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-          pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-          pdf.save(props.documentName);
+      printPDFs(props.courseIds, props.documentName)
+        .then(() => {
           console.log("saved PDF");
           setPrint(false);
+          setIsLoading(false);
         })
         .catch((error) => console.log(error));
     }
-  });
+  }, [print, props.documentName, props.courseIds]);
 
   function handleButton() {
     setPrint(true);
@@ -202,14 +198,42 @@ function Print(props) {
 
   return (
     <div>
-      <Button
-        onClick={handleButton}
-        variant="contained"
-        startIcon={<PrintIcon />}
-        className={classes.button}
-      />
+      {isLoading ? (
+        <Button
+          onClick={handleButton}
+          variant="contained"
+          startIcon={<CircularProgress />}
+          disabled
+          className={classes.button}
+        />
+      ) : (
+        <Button
+          onClick={handleButton}
+          variant="contained"
+          startIcon={<PrintIcon />}
+          className={classes.button}
+        />
+      )}
     </div>
   );
+}
+
+async function printPDFs(courseIds, documentName) {
+  const pdf = new jsPDF();
+
+  await courseIds?.reduce(async (memo, id, index) => {
+    await memo;
+    const input = document.getElementById(id);
+    const canvas = await html2canvas(input);
+    const imgData = canvas.toDataURL("image/png");
+    if (index >= 1) pdf.addPage();
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  }, undefined);
+
+  pdf.save(documentName);
 }
 
 function MyPDF(props) {
@@ -375,9 +399,9 @@ function MyTable(props) {
     return <PrettyTableCell key={item}>{item}</PrettyTableCell>;
   });
 
-  const students = Object.entries(props.course)
-    ?.filter(([key]) => key.startsWith("Student"))
-    .map(([, value]) => value);
+  const students = Object.keys(props.course)
+    .filter((key) => key.startsWith("Student"))
+    .map((key) => props.course[key]);
 
   const tableRowData = students?.map((student) => {
     const lessonEntries = lessons?.map((lesson) => {

@@ -30,7 +30,7 @@ export default function CreateCourse() {
       course
     );
     const newCourse = { ...course, lessons: lessons };
-    functions.CreateItem(newCourse, courses);
+    functions.createItem(newCourse, courses);
   }
 
   const handleClickOpen = () => {

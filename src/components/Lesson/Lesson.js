@@ -21,8 +21,6 @@ export default function Lesson() {
   console.log("Lessons render");
 
   useEffect(() => {
-    console.log(filter);
-    console.log(courses);
     setFilteredData(
       courses?.map((course) => {
         const filteredLessons = course.lessons.filter((item) =>
