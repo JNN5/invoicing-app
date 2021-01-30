@@ -79,12 +79,35 @@ export default function useLocalStorage(key, initialValue) {
     }
   };
 
+  const setLessonEntry = (entry, lessonDate, courseId) => {
+    if (entry && lessonDate && courseId) {
+      const course = storedValue.filter((c) => (c.id = courseId));
+      const updatedLessons = course.lessons?.map((l) => {
+        return { ...l, entry };
+      });
+
+      const updatedCourse = { ...course, lessons: updatedLessons };
+      setValue([
+        ...storedValue.filter((c) => (c.id = courseId)),
+        updatedCourse,
+      ]);
+    } else {
+      throw new Error("missing or wrong parameters");
+    }
+  };
+
+  const restoreData = (data) => {
+    setValue(data);
+  };
+
   return [
     storedValue,
     {
       createItem, //: useCallback(createItem, [setValue]),
       updateItem, //: useCallback(updateItem, [setValue]),
       deleteItem, //: useCallback(deleteItem, [setValue]),
+      setLessonEntry,
+      restoreData,
     },
   ];
 }

@@ -3,7 +3,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Typography } from "@material-ui/core";
+import { Button, Typography, TextField } from "@material-ui/core";
 
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -18,6 +18,13 @@ import logo from "./Logo Antipolis.png";
 import useLocalStorage from "../../api/useLocalStorage";
 
 const useStyles = makeStyles((theme) => ({
+  date: {
+    display: "block",
+    width: "15%",
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginBottom: "2em",
+  },
   button: {
     display: "block",
     width: "10%",
@@ -147,12 +154,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 export default function Anwesenheitsliste() {
-  // const classes = useStyles();
+  const classes = useStyles();
   const [courses] = useLocalStorage("courses");
+  const [month, setMonth] = useState(() => {
+    const now = new Date();
+    return now.getFullYear() + "-" + now.getMonth() + 1;
+  });
+
+  const handleMonthChange = (e) => {
+    setMonth(e.target.value);
+  };
 
   const pdfs = courses.map((course) => {
     const filteredLessons = course.lessons?.filter((lesson) =>
-      lesson.datum.includes("2021-01")
+      lesson.datum.includes(month)
     );
     return (
       <MyPDF key={course.id} course={{ ...course, lessons: filteredLessons }} />
@@ -161,6 +176,15 @@ export default function Anwesenheitsliste() {
 
   return (
     <div>
+      <TextField
+        id="filter"
+        key="filter"
+        label="Monat (YYYY-MM)"
+        value={month}
+        onChange={handleMonthChange}
+        margin="normal"
+        className={classes.date}
+      />
       <Print
         //elementId="UnterrichtsprotokollPDF"
         //elementId="PDFs"
@@ -225,12 +249,12 @@ async function printPDFs(courseIds, documentName) {
     await memo;
     const input = document.getElementById(id);
     const canvas = await html2canvas(input);
-    const imgData = canvas.toDataURL("image/png");
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);
     if (index >= 1) pdf.addPage();
     const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
   }, undefined);
 
   pdf.save(documentName);
@@ -240,7 +264,11 @@ function MyPDF(props) {
   const classes = useStyles();
 
   return (
-    <div id="AnwesenheitslistePDF" className={classes.root}>
+    <div
+      id={props.course.id}
+      //id="AnwesenheitslistePDF"
+      className={classes.root}
+    >
       <Header />
       <Headline />
       <InfoGrid course={props.course} />

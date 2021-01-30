@@ -3,7 +3,7 @@ import Courses from "../Course/Courses";
 import Unterrichtsprotokoll from "../PDFs/Unterrichtsprotokoll";
 import Anwesenheitsliste from "../PDFs/Anwesenheitsliste";
 import FahrtkostenExcel from "../PDFs/FahrtkostenExcel/FahrtkostenExcel";
-import DBTest from "../PDFs/DBTest";
+import Admin from "../Admin/Admin";
 import AccountsIcon from "@material-ui/icons/Cloud";
 
 export const routes = [
@@ -28,9 +28,9 @@ export const routes = [
     path: "/fahrtkostenexcel",
   },
   {
-    name: "DBTest",
-    component: DBTest,
+    name: "Admin",
+    component: Admin,
     icon: AccountsIcon,
-    path: "/dbtest",
+    path: "/admin",
   },
 ];

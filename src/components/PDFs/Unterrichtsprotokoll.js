@@ -21,7 +21,7 @@ import useLocalStorage from "../../api/useLocalStorage";
 const useStyles = makeStyles((theme) => ({
   date: {
     display: "block",
-    width: "10%",
+    width: "15%",
     marginLeft: "auto",
     marginRight: "auto",
     marginBottom: "2em",
@@ -50,8 +50,9 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "3em",
   },
   headline: {
-    textDecoration: "underline",
-    fontWeight: "bold",
+    textDecorationLine: "underline",
+    textDecorationStyle: "solid",
+    fontWeight: 900,
     marginTop: "3em",
   },
   tableContainer: {
@@ -142,17 +143,6 @@ export default function Unterrichtsprotokoll() {
     setMonth(e.target.value);
   };
 
-  /*const sampleCourse = courses[1];
-  const sampleFilteredLessons = sampleCourse.lessons.filter((lesson) =>
-    lesson.datum.includes("2021-01")
-  );
-  const sampleInput = {
-    ...sampleCourse,
-    lessons: sampleFilteredLessons,
-  };
-
-  console.log("sampleInput: ", sampleInput);*/
-
   const pdfs = courses.map((course) => {
     const filteredLessons = course.lessons?.filter((lesson) =>
       lesson.datum.includes(month)
@@ -237,12 +227,12 @@ async function printPDFs(courseIds, documentName) {
     await memo;
     const input = document.getElementById(id);
     const canvas = await html2canvas(input);
-    const imgData = canvas.toDataURL("image/png");
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);
     if (index >= 1) pdf.addPage();
     const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
   }, undefined);
 
   pdf.save(documentName);
@@ -261,7 +251,7 @@ function MyPDF(props) {
       </div>
       <div className={classes.headline}>
         <Typography variant="h4" color="initial">
-          <b>Unterrichtsprotokoll</b>
+          Unterrichtsprotokoll
         </Typography>
       </div>
       <div className={classes.infoGrid}>
