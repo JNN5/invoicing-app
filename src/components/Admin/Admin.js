@@ -8,7 +8,13 @@ export default function Admin() {
 
   const onChange = (file) => {
     //functions.restoreData(JSON.parse(file));
-    console.log(JSON.parse(file));
+    const reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = (e) => {
+      const backup = JSON.parse(e.target.result);
+      functions.restoreData(backup);
+    };
+    //console.log(JSON.parse(file));
   };
 
   return (
@@ -19,7 +25,7 @@ export default function Admin() {
             "data:text/json;charset=utf-8," +
             encodeURIComponent(JSON.stringify(courses))
           }
-          download="fileName.json"
+          download="backup.json"
         >
           Backup
         </a>
