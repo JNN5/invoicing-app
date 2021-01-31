@@ -51,6 +51,7 @@ export default function DynamicDialog(props) {
     if (props.generateId && !newEntry.id) newEntry.id = uuid();
     props.setData(newEntry);
     setRow({});
+    delete newEntry.id;
     props.onClose();
   }
 

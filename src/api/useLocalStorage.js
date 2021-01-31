@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { v4 as uuid } from "uuid";
 
 export default function useLocalStorage(key, initialValue) {
   // State to store our value
@@ -82,18 +83,119 @@ export default function useLocalStorage(key, initialValue) {
     }
   };
 
+  const createCourse = (course) => {
+    if (course && typeof course === "object") {
+      if (!course.id) course.id = uuid();
+      setValue(...storedValue, course);
+    } else {
+      throw new Error("missing or wrong parameters");
+    }
+  };
+
+  const updateCourse = useCallback(
+    (id, course) => {
+      if (id && course && typeof course === "object") {
+        setValue(...storedValue.filter((c) => c.id !== id), course);
+      } else {
+        throw new Error("missing or wrong parameters");
+      }
+    },
+    [setValue, storedValue]
+  );
+
+  const deleteCourse = (id) => {
+    if (id) {
+      setValue(...storedValue.filter((c) => c.id !== id));
+    } else {
+      throw new Error("missing or wrong parameters");
+    }
+  };
+
+  const getCourse = useCallback(
+    (id) => {
+      if (id) {
+        return storedValue.filter((c) => c.id === id);
+      } else {
+        throw new Error("missing or wrong parameters");
+      }
+    },
+    [storedValue]
+  );
+
+  const listCourses = () => {
+    return storedValue;
+  };
+
+  const createLesson = (courseId, lesson) => {
+    if (courseId && lesson && typeof lesson === "object") {
+      const course = getCourse(courseId);
+      if (!lesson.id) lesson.id = uuid();
+      lesson.courseId = courseId;
+      updateCourse(courseId, {
+        ...course,
+        lessons: course.lessons.push(lesson) || lesson,
+      });
+    } else {
+      throw new Error("missing or wrong parameters");
+    }
+  };
+
+  const updateLesson = (courseId, lessonId, lesson) => {
+    if (courseId && lessonId && lesson && typeof lesson === "object") {
+      const course = getCourse(courseId);
+      updateCourse(courseId, {
+        ...course,
+        lessons: course.lessons.filter((l) => l.id !== lessonId).push(lesson),
+      });
+    } else {
+      throw new Error("missing or wrong parameters");
+    }
+  };
+
+  const deleteLesson = (courseId, lessonId) => {
+    if (courseId && lessonId) {
+      const course = getCourse(courseId);
+      updateCourse(courseId, {
+        ...course,
+        lessons: course.lessons.filter((l) => l.id !== lessonId),
+      });
+    } else {
+      throw new Error("missing or wrong parameters");
+    }
+  };
+
+  const getLesson = (courseId, lessonId) => {
+    if (courseId && lessonId) {
+      const course = getCourse(courseId);
+      return course.lessons.filter((l) => l.id === lessonId)[0];
+    } else {
+      throw new Error("missing or wrong parameters");
+    }
+  };
+
+  const listLessons = (courseId) => {
+    if (courseId) {
+      const course = getCourse(courseId);
+      return course.lessons;
+    } else {
+      throw new Error("missing or wrong parameters");
+    }
+  };
+
   const setLessonEntry = (entry, lessonDate, courseId) => {
     if (entry && lessonDate && courseId) {
-      const course = storedValue.filter((c) => (c.id = courseId));
+      const course = storedValue.filter((c) => c.id === courseId);
       const updatedLessons = course.lessons?.map((l) => {
         return { ...l, entry };
       });
 
-      const updatedCourse = { ...course, lessons: updatedLessons };
-      setValue([
+      //const updatedCourse = { ...course, lessons: updatedLessons };
+      console.log("sLE course", course, "sLE updatedLessons", updatedLessons);
+      setValue(storedValue);
+      /*setValue([
         ...storedValue.filter((c) => (c.id = courseId)),
         updatedCourse,
-      ]);
+      ]);*/
     } else {
       throw new Error("missing or wrong parameters");
     }
@@ -110,6 +212,16 @@ export default function useLocalStorage(key, initialValue) {
       updateItem: useCallback(updateItem, [setValue]),
       deleteItem: useCallback(deleteItem, [setValue]),
       setLessonEntry: useCallback(setLessonEntry, [setValue, storedValue]),
+      createCourse: useCallback(createCourse, [setValue, storedValue]),
+      updateCourse: updateCourse,
+      deleteCourse: useCallback(deleteCourse, [setValue, storedValue]),
+      getCourse: getCourse,
+      listCourses: useCallback(listCourses, [storedValue]),
+      createLesson: useCallback(createLesson, [getCourse, updateCourse]),
+      updateLesson: useCallback(updateLesson, [getCourse, updateCourse]),
+      deleteLesson: useCallback(deleteLesson, [getCourse, updateCourse]),
+      getLesson: useCallback(getLesson, [getCourse]),
+      listLessons: useCallback(listLessons, [getCourse]),
       restoreData: useCallback(restoreData, [setValue]),
     },
   ];

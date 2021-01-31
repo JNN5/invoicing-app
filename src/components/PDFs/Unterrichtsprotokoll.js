@@ -12,6 +12,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
 import PrintIcon from "@material-ui/icons/Print";
+import SaveIcon from "@material-ui/icons/Save";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 import logo from "./Logo Antipolis.png";
@@ -19,16 +20,19 @@ import signature from "./Signature-Tiffy.png";
 import useLocalStorage from "../../api/useLocalStorage";
 
 const useStyles = makeStyles((theme) => ({
+  filterAndButton: {},
   date: {
-    display: "block",
-    width: "15%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
     marginLeft: "auto",
     marginRight: "auto",
-    marginBottom: "2em",
+    marginBottom: "1em",
   },
   button: {
-    display: "block",
-    width: "10%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
     marginLeft: "auto",
     marginRight: "auto",
     marginBottom: "2em",
@@ -111,6 +115,20 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "15px",
     width: "70px",
     //height: "120px",
+  },
+  input: {
+    width: "100%",
+    height: "100%",
+    border: "none",
+    outline: "none",
+    margin: "none",
+    padding: "1em, 1.5em",
+    resize: "none",
+  },
+  saveButton: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
   },
   signature: {
     width: "80px",
@@ -206,16 +224,18 @@ export default function Unterrichtsprotokoll() {
   });
 
   return (
-    <div>
-      <TextField
-        id="filter"
-        key="filter"
-        label="Monat (YYYY-MM)"
-        value={month}
-        onChange={handleMonthChange}
-        margin="normal"
-        className={classes.date}
-      />
+    <div className={classes.filterAndButton}>
+      <div className={classes.date}>
+        <TextField
+          id="filter"
+          key="filter"
+          label="Monat (YYYY-MM)"
+          value={month}
+          onChange={handleMonthChange}
+          margin="normal"
+        />
+      </div>
+
       <Print
         //elementId="UnterrichtsprotokollPDF"
         elementId="PDFs"
@@ -267,7 +287,9 @@ function Print(props) {
           variant="contained"
           startIcon={<PrintIcon />}
           className={classes.button}
-        />
+        >
+          PRINT
+        </Button>
       )}
     </div>
   );
@@ -489,7 +511,7 @@ function EditableCell(props) {
   const handleClick = () => {
     let entry = {};
     entry[entryKey] = state;
-    //functions.setLessonItem(entry, lessonDate, courseId);
+    functions.setLessonEntry(entry, lessonDate, courseId);
     console.log("calling setLEssonItem with:", entry, lessonDate, courseId);
   };
 
@@ -500,22 +522,27 @@ function EditableCell(props) {
 
   return (
     <>
+      <Typography variant="inherit" color="initial">
+        <textarea
+          onChange={handleChange}
+          key={"update-" + entryKey}
+          value={state}
+          type="text"
+          className={classes.input}
+        ></textarea>
+      </Typography>
       {state === props.entryValue ? (
         <></>
       ) : (
         <Button
           onClick={handleClick}
-          variant="contained"
-          startIcon={<PrintIcon />}
-        />
+          //variant="contained"
+          startIcon={<SaveIcon />}
+          className={classes.saveButton}
+        >
+          Save
+        </Button>
       )}
-      <input
-        onChange={handleChange}
-        key={"update-" + entryKey}
-        value={state}
-        type="text"
-        className={classes.input}
-      ></input>
     </>
   );
 }
