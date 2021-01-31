@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "15%",
     width: "70%",
   },
-  tableCell: {
+  tableHeaderCell: {
     textAlign: "left",
     //fontFamily: "Century Gothic,CenturyGothic,AppleGothic,sans-serif",
     //fontWeight: "100",
@@ -78,6 +78,30 @@ const useStyles = makeStyles((theme) => ({
     fontSize: "15px",
     maxWidth: "200px",
   },
+  tableHeaderFirstCell: {
+    textAlign: "left",
+    borderBottomStyle: "solid",
+    borderBottomColor: "black",
+    borderBottomWidth: "1px",
+    padding: "5px",
+    fontSize: "15px",
+    width: "70px",
+  },
+  tableCell: {
+    textAlign: "left",
+    //fontFamily: "Century Gothic,CenturyGothic,AppleGothic,sans-serif",
+    //fontWeight: "100",
+    padding: "5px",
+    borderLeftStyle: "solid",
+    borderLeftColor: "black",
+    borderLeftWidth: "1px",
+    borderBottomStyle: "solid",
+    borderBottomColor: "black",
+    borderBottomWidth: "1px",
+    fontSize: "15px",
+    maxWidth: "200px",
+    //height: "120px",
+  },
   tableFirstCell: {
     textAlign: "left",
     borderBottomStyle: "solid",
@@ -86,6 +110,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "5px",
     fontSize: "15px",
     width: "70px",
+    //height: "120px",
   },
   signature: {
     width: "80px",
@@ -143,7 +168,35 @@ export default function Unterrichtsprotokoll() {
     setMonth(e.target.value);
   };
 
-  const pdfs = courses.map((course) => {
+  const wochentage = {
+    Montag: 0,
+    Dienstag: 1,
+    Mittwoch: 2,
+    Donnerstag: 3,
+    Freitag: 4,
+  };
+
+  const sortedCourses = courses.sort((c1, c2) => {
+    if (wochentage[c1.Wochentag] < wochentage[c2.Wochentag]) {
+      return -1;
+    } else if (wochentage[c1.Wochentag] > wochentage[c2.Wochentag]) {
+      return 1;
+    } else {
+      if (
+        parseInt(c1.Zeit.substring(0, 2)) < parseInt(c2.Zeit.substring(0, 2))
+      ) {
+        return -1;
+      } else if (
+        parseInt(c1.Zeit.substring(0, 2)) > parseInt(c2.Zeit.substring(0, 2))
+      ) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+  });
+
+  const pdfs = sortedCourses.map((course) => {
     const filteredLessons = course.lessons?.filter((lesson) =>
       lesson.datum.includes(month)
     );
@@ -166,7 +219,7 @@ export default function Unterrichtsprotokoll() {
       <Print
         //elementId="UnterrichtsprotokollPDF"
         elementId="PDFs"
-        courseIds={courses.map((c) => c.id)}
+        courseIds={sortedCourses.map((c) => c.id)}
         documentName={"Minutes_" + month + ".pdf"}
       />
       {/*<MyPDF course={sampleInput} />*/}
@@ -276,6 +329,7 @@ function MyPDF(props) {
             ...lesson,
             ort: props.course.Kunde,
             time: props.course.Zeit,
+            courseId: props.course.id,
           };
         })}
       />
@@ -324,11 +378,11 @@ function MyTable(props) {
   ].map((text) => {
     if (text === "Ort")
       return (
-        <PrettyTableCell key={text} first={true}>
+        <PrettyTableHeaderCell key={text} first={true}>
           {text}
-        </PrettyTableCell>
+        </PrettyTableHeaderCell>
       );
-    return <PrettyTableCell key={text}>{text}</PrettyTableCell>;
+    return <PrettyTableHeaderCell key={text}>{text}</PrettyTableHeaderCell>;
   });
 
   const formatDate = (date) => {
@@ -364,8 +418,14 @@ function MyTable(props) {
                 {row.time}
               </PrettyTableCell>
               <PrettyTableCell key={index + row.Unterrichtsinhalt} align="left">
-                {row.Unterrichtsinhalt ||
-                  "aaaaaaaafhjadfsja slkdjhas kld jfhal ksd fhalk sjdf hlweiu fhla skjdbl ia wuef balisudbf ai lw uefbl aksd jfba liweufb galsk dj fbalwie ufbgl skdjf baeil uwfblsi"}
+                <EditableCell
+                  entryKey="Unterrichtsinhalt"
+                  entryValue={row.Unterrichtsinhalt}
+                  lessonDate={row.datum}
+                  courseId={row.courseId}
+                >
+                  {row.Unterrichtsinhalt}
+                </EditableCell>
               </PrettyTableCell>
               <PrettyTableCell key={index + "signature"} align="left">
                 <img src={signature} alt="Logo" className={classes.signature} />
@@ -396,5 +456,66 @@ function PrettyTableCell(props) {
         {props.children}
       </Typography>
     </TableCell>
+  );
+}
+
+function PrettyTableHeaderCell(props) {
+  const classes = useStyles();
+
+  if (props.first)
+    return (
+      <TableCell align="left" className={classes.tableHeaderFirstCell}>
+        <Typography variant="inherit" color="initial">
+          {props.children}
+        </Typography>
+      </TableCell>
+    );
+
+  return (
+    <TableCell align="left" className={classes.tableHeaderCell}>
+      <Typography variant="inherit" color="initial">
+        {props.children}
+      </Typography>
+    </TableCell>
+  );
+}
+
+function EditableCell(props) {
+  const classes = useStyles();
+  const [, functions] = useLocalStorage("courses");
+  const [state, setState] = useState(props.entryValue);
+  const { entryKey, lessonDate, courseId } = props;
+
+  const handleClick = () => {
+    let entry = {};
+    entry[entryKey] = state;
+    //functions.setLessonItem(entry, lessonDate, courseId);
+    console.log("calling setLEssonItem with:", entry, lessonDate, courseId);
+  };
+
+  const handleChange = (e) => {
+    console.log(e.target.value);
+    setState(e.target.value);
+  };
+
+  return (
+    <>
+      {state === props.entryValue ? (
+        <></>
+      ) : (
+        <Button
+          onClick={handleClick}
+          variant="contained"
+          startIcon={<PrintIcon />}
+        />
+      )}
+      <input
+        onChange={handleChange}
+        key={"update-" + entryKey}
+        value={state}
+        type="text"
+        className={classes.input}
+      ></input>
+    </>
   );
 }

@@ -23,12 +23,15 @@ const useStyles = makeStyles((theme) => ({
 export default function ItemCard(props) {
   const classes = useStyles();
 
+  console.log("lesson item props", props.item);
+
   function List() {
     if (props.item.lessons) {
       return props.item.lessons.map((lesson) => {
+        const lessonWithCourseId = { ...lesson, courseId: props.item.id };
         return (
           <Grid item xs={5} key={lesson.datum}>
-            <EditLesson item={lesson} />
+            <EditLesson item={lessonWithCourseId} />
           </Grid>
         );
       });

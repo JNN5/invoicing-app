@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export default function useLocalStorage(key, initialValue) {
   // State to store our value
@@ -37,21 +37,24 @@ export default function useLocalStorage(key, initialValue) {
     [key, storedValue]
   );*/
 
-  const setValue = (value) => {
-    try {
-      console.log(key, value);
-      // Allow value to be a function so we have same API as useState
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
-      // Save state
-      setStoredValue(valueToStore);
-      // Save to local storage
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      // A more advanced implementation would handle the error case
-      console.log(error);
-    }
-  };
+  const setValue = useCallback(
+    (value) => {
+      try {
+        console.log(key, value);
+        // Allow value to be a function so we have same API as useState
+        const valueToStore =
+          value instanceof Function ? value(storedValue) : value;
+        // Save state
+        setStoredValue(valueToStore);
+        // Save to local storage
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      } catch (error) {
+        // A more advanced implementation would handle the error case
+        console.log(error);
+      }
+    },
+    [key, storedValue]
+  );
 
   const createItem = (item, data) => {
     if (data && Array.isArray(data) && item) {
@@ -103,11 +106,11 @@ export default function useLocalStorage(key, initialValue) {
   return [
     storedValue,
     {
-      createItem, //: useCallback(createItem, [setValue]),
-      updateItem, //: useCallback(updateItem, [setValue]),
-      deleteItem, //: useCallback(deleteItem, [setValue]),
-      setLessonEntry,
-      restoreData,
+      createItem: useCallback(createItem, [setValue]),
+      updateItem: useCallback(updateItem, [setValue]),
+      deleteItem: useCallback(deleteItem, [setValue]),
+      setLessonEntry: useCallback(setLessonEntry, [setValue, storedValue]),
+      restoreData: useCallback(restoreData, [setValue]),
     },
   ];
 }

@@ -22,16 +22,22 @@ export default function EditLesson(props) {
 
   // make sure changed cases are editet in state
   function setData(updatedLesson) {
-    const updatedCourse = {
-      ...props.item,
-      lessons: props.item.lessons.push(updatedLesson),
+    const course = {
+      ...courses.filter((c) => c.id === props.item.courseId)[0],
     };
-    const updatedCourses = [
+    const updatedCourse = {
+      ...course,
+      lessons: course.lessons.map((l) => {
+        if (l.datum === props.item.datum) return { ...l, ...updatedLesson };
+        return l;
+      }),
+    };
+    /*const updatedCourses = [
       ...courses.filter((course) => course.id !== props.item.id),
       updatedCourse,
-    ];
-    console.log("updatedCourses in EditLesson", updatedCourses);
-    functions.updateItem(updatedCourses);
+    ];*/
+    console.log("updatedCourses in EditLesson", updatedCourse);
+    functions.updateItem(updatedCourse, courses);
   }
 
   const handleClickOpen = () => {

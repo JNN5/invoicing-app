@@ -32,6 +32,7 @@ export default function Lesson() {
   }, [courses, filter]);
 
   const lessonList = filteredData?.map((lesson) => {
+    //const lessonItem = {...lesson, courseId = course.id}
     return (
       <LessonItem key={lesson.id || JSON.stringify(lesson)} item={lesson} />
     );
