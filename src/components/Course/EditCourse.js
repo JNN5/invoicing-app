@@ -9,12 +9,11 @@ import useLocalStorage from "../../api/useLocalStorage";
 import { courses as fields } from "../../api/dataStructures";
 
 export default function EditItem(props) {
-  const [courses, functions] = useLocalStorage("courses", []);
+  const [, functions] = useLocalStorage("courses", []);
   const [open, setOpen] = useState(false);
 
-  // make sure changed cases are editet in state
   function setData(course) {
-    functions.updateItem(course, courses);
+    functions.updateCourse(props.item.id, course);
   }
 
   const handleClickOpen = () => {

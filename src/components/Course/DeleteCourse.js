@@ -8,12 +8,12 @@ import DynamicDialog from "../Generic/DynamicDialog";
 import useLocalStorage from "../../api/useLocalStorage";
 
 export default function DeleteItem(props) {
-  const [courses, functions] = useLocalStorage("courses", []);
+  const [, functions] = useLocalStorage("courses", []);
   const [open, setOpen] = useState(false);
 
   // filter out deleted item from data array
   function setData() {
-    functions.deleteItem(props.item, courses);
+    functions.deleteCourse(props.item.id);
   }
 
   const handleClickOpen = () => {

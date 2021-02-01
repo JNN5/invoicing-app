@@ -28,10 +28,9 @@ export default function ItemCard(props) {
   function List() {
     if (props.item.lessons) {
       return props.item.lessons.map((lesson) => {
-        const lessonWithCourseId = { ...lesson, courseId: props.item.id };
         return (
           <Grid item xs={5} key={lesson.datum}>
-            <EditLesson item={lessonWithCourseId} />
+            <EditLesson item={lesson} />
           </Grid>
         );
       });

@@ -23,7 +23,7 @@ export default function Courses() {
 
   console.log("Courses render");
 
-  const itemList = sortedData?.map((item) => {
+  const courseList = sortedData?.map((item) => {
     return <CourseItem key={item.id || JSON.stringify(item)} item={item} />;
   });
 
@@ -33,7 +33,7 @@ export default function Courses() {
         <h4>Courses</h4>
         <CreateCourse />
         <Grid container spacing={3}>
-          {itemList}
+          {courseList}
         </Grid>
       </div>
     </div>

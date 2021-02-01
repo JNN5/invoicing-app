@@ -18,8 +18,6 @@ export default function Lesson() {
     setFilter(event.target.value);
   };
 
-  console.log("Lessons render");
-
   useEffect(() => {
     setFilteredData(
       courses?.map((course) => {

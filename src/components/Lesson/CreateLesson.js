@@ -10,7 +10,7 @@ import { lesson } from "../../api/dataStructures";
 import useLocalStorage from "../../api/useLocalStorage";
 
 export default function CreateLesson(props) {
-  const [courses, functions] = useLocalStorage("courses");
+  const [, functions] = useLocalStorage("courses");
   const [open, setOpen] = useState(false);
 
   // adding Students to data by creating a key value pair for each student: {Name: Anwesenheit}
@@ -22,8 +22,8 @@ export default function CreateLesson(props) {
     });
 
   // make sure new data are added to state
-  function setData(data) {
-    addLesson(data, props.item, courses, functions.updateItem);
+  function setData(lesson) {
+    //addLesson(data, props.item, courses, functions.updateItem);
     /*
     let newItem = props.item;
     if (!newItem.lessons) props.item.lessons = [];
@@ -37,6 +37,7 @@ export default function CreateLesson(props) {
     //newData.push(data);
     console.log("newData in setData:", newData);
     props.setData(newData);*/
+    functions.createLesson(props.item.courseId, lesson);
   }
 
   const handleClickOpen = () => {
@@ -65,19 +66,6 @@ export default function CreateLesson(props) {
       />
     </div>
   );
-}
-
-function addLesson(lesson, course, courses, updateCourse) {
-  let newItem = course;
-  if (!newItem.lessons) newItem.lessons = [];
-  newItem.lessons.push(lesson);
-
-  const updatedCourses = [
-    ...courses.filter((item) => item.id !== course.id),
-    newItem,
-  ];
-
-  updateCourse(updatedCourses);
 }
 
 // PropTypes validation

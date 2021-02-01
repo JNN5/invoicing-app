@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ItemCard(props) {
+export default function CourseItem(props) {
   const classes = useStyles();
 
   const courseItemContent = Object.entries(props.item)
@@ -61,6 +61,6 @@ export default function ItemCard(props) {
 }
 
 // PropTypes validation
-ItemCard.propTypes = {
+CourseItem.propTypes = {
   item: PropTypes.object.isRequired,
 };

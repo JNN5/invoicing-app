@@ -443,8 +443,7 @@ function MyTable(props) {
                 <EditableCell
                   entryKey="Unterrichtsinhalt"
                   entryValue={row.Unterrichtsinhalt}
-                  lessonDate={row.datum}
-                  courseId={row.courseId}
+                  lesson={row}
                 >
                   {row.Unterrichtsinhalt}
                 </EditableCell>
@@ -506,13 +505,11 @@ function EditableCell(props) {
   const classes = useStyles();
   const [, functions] = useLocalStorage("courses");
   const [state, setState] = useState(props.entryValue);
-  const { entryKey, lessonDate, courseId } = props;
 
   const handleClick = () => {
-    let entry = {};
-    entry[entryKey] = state;
-    functions.setLessonEntry(entry, lessonDate, courseId);
-    console.log("calling setLEssonItem with:", entry, lessonDate, courseId);
+    let lesson = props.lesson;
+    lesson[props.entryKey] = state;
+    functions.updateLesson(props.lesson.courseId, props.lesson.id, lesson);
   };
 
   const handleChange = (e) => {
@@ -525,7 +522,7 @@ function EditableCell(props) {
       <Typography variant="inherit" color="initial">
         <textarea
           onChange={handleChange}
-          key={"update-" + entryKey}
+          key={"update-" + props.entryKey}
           value={state}
           type="text"
           className={classes.input}

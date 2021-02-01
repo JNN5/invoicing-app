@@ -1,5 +1,7 @@
 import { useState, useCallback } from "react";
-import { v4 as uuid } from "uuid";
+import uuid from "react-uuid";
+
+import { lesson as lessonObjectStructure } from "./dataStructures";
 
 export default function useLocalStorage(key, initialValue) {
   // State to store our value
@@ -41,7 +43,7 @@ export default function useLocalStorage(key, initialValue) {
   const setValue = useCallback(
     (value) => {
       try {
-        console.log(key, value);
+        //console.log(key, value);
         // Allow value to be a function so we have same API as useState
         const valueToStore =
           value instanceof Function ? value(storedValue) : value;
@@ -86,7 +88,21 @@ export default function useLocalStorage(key, initialValue) {
   const createCourse = (course) => {
     if (course && typeof course === "object") {
       if (!course.id) course.id = uuid();
-      setValue(...storedValue, course);
+      // generate a lesson per week if the course has a start and end date
+      let lessons = [];
+      if (course.Start_Datum && course.Ende_Datum) {
+        lessons = generateWeeklyLesson(
+          course.Start_Datum,
+          course.Ende_Datum,
+          course
+        );
+      }
+      course.lessons = lessons;
+      if (storedValue) {
+        setValue([...storedValue, course]);
+      } else {
+        setValue([course]);
+      }
     } else {
       throw new Error("missing or wrong parameters");
     }
@@ -95,7 +111,7 @@ export default function useLocalStorage(key, initialValue) {
   const updateCourse = useCallback(
     (id, course) => {
       if (id && course && typeof course === "object") {
-        setValue(...storedValue.filter((c) => c.id !== id), course);
+        setValue([...storedValue.filter((c) => c.id !== id), course]);
       } else {
         throw new Error("missing or wrong parameters");
       }
@@ -105,7 +121,7 @@ export default function useLocalStorage(key, initialValue) {
 
   const deleteCourse = (id) => {
     if (id) {
-      setValue(...storedValue.filter((c) => c.id !== id));
+      setValue([...storedValue.filter((c) => c.id !== id)]);
     } else {
       throw new Error("missing or wrong parameters");
     }
@@ -114,7 +130,7 @@ export default function useLocalStorage(key, initialValue) {
   const getCourse = useCallback(
     (id) => {
       if (id) {
-        return storedValue.filter((c) => c.id === id);
+        return storedValue.filter((c) => c.id === id)[0];
       } else {
         throw new Error("missing or wrong parameters");
       }
@@ -126,14 +142,51 @@ export default function useLocalStorage(key, initialValue) {
     return storedValue;
   };
 
+  const generateWeeklyLesson = (fromDate, toDate, course) => {
+    if (fromDate && toDate && course && typeof course === "object") {
+      let date = new Date(fromDate);
+      const endDate = new Date(toDate);
+
+      let lessonFields = {};
+      Object.keys(lessonObjectStructure).forEach(
+        (key) => (lessonFields[key] = "")
+      ); // import datastructure
+      // add a field for every Student in the course
+      Object.entries(course)
+        .filter(([key]) => key.startsWith("Student"))
+        .forEach(([, value]) => {
+          lessonFields[value] = "";
+        });
+
+      // Add a weekly lesson starting from the provided start date ending on the end date
+      let lessons = [];
+      while (date.getTime() <= endDate.getTime()) {
+        lessons.push({
+          ...lessonFields,
+          datum: date.toISOString().substring(0, 10),
+          courseId: course.id,
+          id: uuid(),
+        });
+        //add 7 days to date
+        date.setDate(date.getDate() + 7);
+      }
+      return lessons;
+    } else {
+      throw new Error("missing or wrong parameters");
+    }
+  };
+
   const createLesson = (courseId, lesson) => {
     if (courseId && lesson && typeof lesson === "object") {
       const course = getCourse(courseId);
       if (!lesson.id) lesson.id = uuid();
       lesson.courseId = courseId;
+      let lessons = [];
+      if (course.lessons) lessons = course.lessons;
+      lessons.push(lesson);
       updateCourse(courseId, {
         ...course,
-        lessons: course.lessons.push(lesson) || lesson,
+        lessons: lessons,
       });
     } else {
       throw new Error("missing or wrong parameters");
@@ -145,7 +198,7 @@ export default function useLocalStorage(key, initialValue) {
       const course = getCourse(courseId);
       updateCourse(courseId, {
         ...course,
-        lessons: course.lessons.filter((l) => l.id !== lessonId).push(lesson),
+        lessons: [...course.lessons.filter((l) => l.id !== lessonId), lesson],
       });
     } else {
       throw new Error("missing or wrong parameters");
@@ -201,8 +254,12 @@ export default function useLocalStorage(key, initialValue) {
     }
   };
 
+  const backupData = () => {
+    return JSON.stringify(storedValue);
+  };
+
   const restoreData = (data) => {
-    setValue(data);
+    setValue(JSON.parse(data));
   };
 
   return [
@@ -222,6 +279,7 @@ export default function useLocalStorage(key, initialValue) {
       deleteLesson: useCallback(deleteLesson, [getCourse, updateCourse]),
       getLesson: useCallback(getLesson, [getCourse]),
       listLessons: useCallback(listLessons, [getCourse]),
+      backupData: useCallback(backupData, [storedValue]),
       restoreData: useCallback(restoreData, [setValue]),
     },
   ];

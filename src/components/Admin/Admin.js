@@ -4,17 +4,14 @@ import { FilePicker } from "react-file-picker";
 import { Button } from "@material-ui/core";
 
 export default function Admin() {
-  const [courses, functions] = useLocalStorage("courses");
+  const [, functions] = useLocalStorage("courses");
 
   const onChange = (file) => {
-    //functions.restoreData(JSON.parse(file));
     const reader = new FileReader();
     reader.readAsText(file);
     reader.onload = (e) => {
-      const backup = JSON.parse(e.target.result);
-      functions.restoreData(backup);
+      functions.restoreData(e.target.result);
     };
-    //console.log(JSON.parse(file));
   };
 
   return (
@@ -23,7 +20,7 @@ export default function Admin() {
         <a
           href={
             "data:text/json;charset=utf-8," +
-            encodeURIComponent(JSON.stringify(courses))
+            encodeURIComponent(functions.backupData())
           }
           download="backup.json"
         >

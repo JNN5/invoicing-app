@@ -10,7 +10,7 @@ import { lesson as fieldStructure } from "../../api/dataStructures";
 import useLocalStorage from "../../api/useLocalStorage";
 
 export default function EditLesson(props) {
-  const [courses, functions] = useLocalStorage("courses");
+  const [, functions] = useLocalStorage("courses");
   const [open, setOpen] = useState(false);
 
   let fields = { ...fieldStructure };
@@ -21,8 +21,8 @@ export default function EditLesson(props) {
     });
 
   // make sure changed cases are editet in state
-  function setData(updatedLesson) {
-    const course = {
+  function setData(lesson) {
+    /*const course = {
       ...courses.filter((c) => c.id === props.item.courseId)[0],
     };
     const updatedCourse = {
@@ -35,9 +35,9 @@ export default function EditLesson(props) {
     /*const updatedCourses = [
       ...courses.filter((course) => course.id !== props.item.id),
       updatedCourse,
-    ];*/
-    console.log("updatedCourses in EditLesson", updatedCourse);
-    functions.updateItem(updatedCourse, courses);
+    ];
+    functions.updateItem(updatedCourse, courses);*/
+    functions.updateLesson(props.item.courseId, props.item.id, lesson);
   }
 
   const handleClickOpen = () => {
