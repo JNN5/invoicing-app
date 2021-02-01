@@ -11,7 +11,13 @@ export default function Lesson() {
   const [filteredData, setFilteredData] = useState([]);
   const [filter, setFilter] = useState(() => {
     const now = new Date();
-    return now.getFullYear() + "-" + now.getMonth() + 1;
+    function getMonth() {
+      let month = "";
+      if (now.getMonth() < 10) month = "0";
+      return (month += now.getMonth());
+    }
+    const month = getMonth();
+    return now.getFullYear() + "-" + month;
   });
 
   const handleFilterChange = (event) => {
