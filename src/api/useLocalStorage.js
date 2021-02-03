@@ -18,6 +18,7 @@ export default function useLocalStorage(key, initialValue) {
       return initialValue;
     }
   });
+  console.log("useLocalStorageRender", storedValue);
 
   // Return a wrapped version of useState's setter function that ...
   // ... persists the new value to localStorage.
@@ -59,54 +60,31 @@ export default function useLocalStorage(key, initialValue) {
     [key, storedValue]
   );
 
-  const createItem = (item, data) => {
-    if (data && Array.isArray(data) && item) {
-      setValue([...data, item]);
-    } else if (!data && item) {
-      setValue([item]);
-    } else {
-      throw new Error("missing or wrong parameters");
-    }
-  };
-
-  const updateItem = (item, data) => {
-    if (data && Array.isArray(data) && item) {
-      setValue([...data.filter((element) => element.id !== item.id), item]);
-    } else {
-      throw new Error("missing or wrong parameters");
-    }
-  };
-
-  const deleteItem = (item, data) => {
-    if (data && Array.isArray(data) && item) {
-      setValue(data.filter((element) => element.id !== item.id));
-    } else {
-      throw new Error("missing or wrong parameters");
-    }
-  };
-
-  const createCourse = (course) => {
-    if (course && typeof course === "object") {
-      if (!course.id) course.id = uuid();
-      // generate a lesson per week if the course has a start and end date
-      let lessons = [];
-      if (course.Start_Datum && course.Ende_Datum) {
-        lessons = generateWeeklyLesson(
-          course.Start_Datum,
-          course.Ende_Datum,
-          course
-        );
-      }
-      course.lessons = lessons;
-      if (storedValue) {
-        setValue([...storedValue, course]);
+  const createCourse = useCallback(
+    (course) => {
+      if (course && typeof course === "object") {
+        if (!course.id) course.id = uuid();
+        // generate a lesson per week if the course has a start and end date
+        let lessons = [];
+        if (course.Start_Datum && course.Ende_Datum) {
+          lessons = generateWeeklyLesson(
+            course.Start_Datum,
+            course.Ende_Datum,
+            course
+          );
+        }
+        course.lessons = lessons;
+        if (storedValue) {
+          setValue([...storedValue, course]);
+        } else {
+          setValue([course]);
+        }
       } else {
-        setValue([course]);
+        throw new Error("missing or wrong parameters");
       }
-    } else {
-      throw new Error("missing or wrong parameters");
-    }
-  };
+    },
+    [setValue, storedValue]
+  );
 
   const updateCourse = useCallback(
     (id, course) => {
@@ -119,13 +97,16 @@ export default function useLocalStorage(key, initialValue) {
     [setValue, storedValue]
   );
 
-  const deleteCourse = (id) => {
-    if (id) {
-      setValue([...storedValue.filter((c) => c.id !== id)]);
-    } else {
-      throw new Error("missing or wrong parameters");
-    }
-  };
+  const deleteCourse = useCallback(
+    (id) => {
+      if (id) {
+        setValue([...storedValue.filter((c) => c.id !== id)]);
+      } else {
+        throw new Error("missing or wrong parameters");
+      }
+    },
+    [setValue, storedValue]
+  );
 
   const getCourse = useCallback(
     (id) => {
@@ -138,9 +119,9 @@ export default function useLocalStorage(key, initialValue) {
     [storedValue]
   );
 
-  const listCourses = () => {
+  const listCourses = useCallback(() => {
     return storedValue;
-  };
+  }, [storedValue]);
 
   const generateWeeklyLesson = (fromDate, toDate, course) => {
     if (fromDate && toDate && course && typeof course === "object") {
@@ -176,111 +157,106 @@ export default function useLocalStorage(key, initialValue) {
     }
   };
 
-  const createLesson = (courseId, lesson) => {
-    if (courseId && lesson && typeof lesson === "object") {
-      const course = getCourse(courseId);
-      if (!lesson.id) lesson.id = uuid();
-      lesson.courseId = courseId;
-      let lessons = [];
-      if (course.lessons) lessons = course.lessons;
-      lessons.push(lesson);
-      updateCourse(courseId, {
-        ...course,
-        lessons: lessons,
-      });
-    } else {
-      throw new Error("missing or wrong parameters");
-    }
-  };
+  const createLesson = useCallback(
+    (courseId, lesson) => {
+      if (courseId && lesson && typeof lesson === "object") {
+        const course = getCourse(courseId);
+        if (!lesson.id) lesson.id = uuid();
+        lesson.courseId = courseId;
+        let lessons = [];
+        if (course.lessons) lessons = course.lessons;
+        lessons.push(lesson);
+        updateCourse(courseId, {
+          ...course,
+          lessons: lessons,
+        });
+      } else {
+        throw new Error("missing or wrong parameters");
+      }
+    },
+    [getCourse, updateCourse]
+  );
 
-  const updateLesson = (courseId, lessonId, lesson) => {
-    if (courseId && lessonId && lesson && typeof lesson === "object") {
-      const course = getCourse(courseId);
-      updateCourse(courseId, {
-        ...course,
-        lessons: [...course.lessons.filter((l) => l.id !== lessonId), lesson],
-      });
-    } else {
-      throw new Error("missing or wrong parameters");
-    }
-  };
+  const updateLesson = useCallback(
+    (courseId, lessonId, lesson) => {
+      if (courseId && lessonId && lesson && typeof lesson === "object") {
+        const course = getCourse(courseId);
+        updateCourse(courseId, {
+          ...course,
+          lessons: [...course.lessons.filter((l) => l.id !== lessonId), lesson],
+        });
+      } else {
+        throw new Error("missing or wrong parameters");
+      }
+    },
+    [getCourse, updateCourse]
+  );
 
-  const deleteLesson = (courseId, lessonId) => {
-    if (courseId && lessonId) {
-      const course = getCourse(courseId);
-      updateCourse(courseId, {
-        ...course,
-        lessons: course.lessons.filter((l) => l.id !== lessonId),
-      });
-    } else {
-      throw new Error("missing or wrong parameters");
-    }
-  };
+  const deleteLesson = useCallback(
+    (courseId, lessonId) => {
+      if (courseId && lessonId) {
+        const course = getCourse(courseId);
+        updateCourse(courseId, {
+          ...course,
+          lessons: course.lessons.filter((l) => l.id !== lessonId),
+        });
+      } else {
+        throw new Error("missing or wrong parameters");
+      }
+    },
+    [getCourse, updateCourse]
+  );
 
-  const getLesson = (courseId, lessonId) => {
-    if (courseId && lessonId) {
-      const course = getCourse(courseId);
-      return course.lessons.filter((l) => l.id === lessonId)[0];
-    } else {
-      throw new Error("missing or wrong parameters");
-    }
-  };
+  const getLesson = useCallback(
+    (courseId, lessonId) => {
+      if (courseId && lessonId) {
+        const course = getCourse(courseId);
+        return course.lessons.filter((l) => l.id === lessonId)[0];
+      } else {
+        throw new Error("missing or wrong parameters");
+      }
+    },
+    [getCourse]
+  );
 
-  const listLessons = (courseId) => {
-    if (courseId) {
-      const course = getCourse(courseId);
-      return course.lessons;
-    } else {
-      throw new Error("missing or wrong parameters");
-    }
-  };
+  const listLessons = useCallback(
+    (courseId) => {
+      if (courseId) {
+        const course = getCourse(courseId);
+        return course.lessons;
+      } else {
+        throw new Error("missing or wrong parameters");
+      }
+    },
+    [getCourse]
+  );
 
-  const setLessonEntry = (entry, lessonDate, courseId) => {
-    if (entry && lessonDate && courseId) {
-      const course = storedValue.filter((c) => c.id === courseId);
-      const updatedLessons = course.lessons?.map((l) => {
-        return { ...l, entry };
-      });
-
-      //const updatedCourse = { ...course, lessons: updatedLessons };
-      console.log("sLE course", course, "sLE updatedLessons", updatedLessons);
-      setValue(storedValue);
-      /*setValue([
-        ...storedValue.filter((c) => (c.id = courseId)),
-        updatedCourse,
-      ]);*/
-    } else {
-      throw new Error("missing or wrong parameters");
-    }
-  };
-
-  const backupData = () => {
+  const backupData = useCallback(() => {
     return JSON.stringify(storedValue);
-  };
+  }, [storedValue]);
 
-  const restoreData = (data) => {
-    setValue(JSON.parse(data));
-  };
+  const restoreData = useCallback(
+    (data) => {
+      setValue(JSON.parse(data));
+    },
+    [setValue]
+  );
 
   return [
     storedValue,
     {
-      createItem: useCallback(createItem, [setValue]),
-      updateItem: useCallback(updateItem, [setValue]),
-      deleteItem: useCallback(deleteItem, [setValue]),
-      setLessonEntry: useCallback(setLessonEntry, [setValue, storedValue]),
-      createCourse: useCallback(createCourse, [setValue, storedValue]),
-      updateCourse: updateCourse,
-      deleteCourse: useCallback(deleteCourse, [setValue, storedValue]),
-      getCourse: getCourse,
-      listCourses: useCallback(listCourses, [storedValue]),
-      createLesson: useCallback(createLesson, [getCourse, updateCourse]),
-      updateLesson: useCallback(updateLesson, [getCourse, updateCourse]),
-      deleteLesson: useCallback(deleteLesson, [getCourse, updateCourse]),
-      getLesson: useCallback(getLesson, [getCourse]),
-      listLessons: useCallback(listLessons, [getCourse]),
-      backupData: useCallback(backupData, [storedValue]),
-      restoreData: useCallback(restoreData, [setValue]),
+      createCourse,
+      updateCourse,
+      deleteCourse,
+      getCourse,
+      listCourses,
+      createLesson,
+      updateLesson,
+      deleteLesson,
+      getLesson,
+      listLessons,
+      backupData,
+      restoreData,
     },
   ];
 }

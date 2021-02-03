@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
@@ -15,7 +15,7 @@ import PrintIcon from "@material-ui/icons/Print";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 import logo from "./Logo Antipolis.png";
-import useLocalStorage from "../../api/useLocalStorage";
+import { DataContext } from "../../api/DataContext";
 
 const useStyles = makeStyles((theme) => ({
   date: {
@@ -155,17 +155,23 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function Anwesenheitsliste() {
   const classes = useStyles();
-  const [courses] = useLocalStorage("courses");
+  const { courses } = useContext(DataContext);
   const [month, setMonth] = useState(() => {
     const now = new Date();
-    return now.getFullYear() + "-" + now.getMonth() + 1;
+    function getMonth() {
+      let month = "";
+      if (now.getMonth() < 10) month = "0";
+      return (month += now.getMonth());
+    }
+    const month = getMonth();
+    return now.getFullYear() + "-" + month;
   });
 
   const handleMonthChange = (e) => {
     setMonth(e.target.value);
   };
 
-  const pdfs = courses.map((course) => {
+  const pdfs = courses?.map((course) => {
     const filteredLessons = course.lessons?.filter((lesson) =>
       lesson.datum.includes(month)
     );
@@ -188,7 +194,7 @@ export default function Anwesenheitsliste() {
       <Print
         //elementId="UnterrichtsprotokollPDF"
         //elementId="PDFs"
-        courseIds={courses.map((c) => c.id)}
+        courseIds={courses?.map((c) => c.id)}
         documentName="Anwesenheitsliste.pdf"
       />
       {/*<MyPDF course={sampleInput} />*/}

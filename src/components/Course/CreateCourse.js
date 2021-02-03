@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -7,7 +7,7 @@ import AddIcon from "@material-ui/icons/Add";
 import DynamicDialog from "../Generic/DynamicDialog";
 
 import { courses as fields } from "../../api/dataStructures";
-import useLocalStorage from "../../api/useLocalStorage";
+import { DataContext } from "../../api/DataContext";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -18,7 +18,8 @@ const useStyles = makeStyles((theme) => ({
 export default function CreateCourse() {
   const classes = useStyles();
 
-  const [, functions] = useLocalStorage("courses", []);
+  //const [, functions] = useLocalStorage("courses", []);
+  const { createCourse } = useContext(DataContext);
   const [open, setOpen] = useState(false);
 
   // make sure new data are added to state
@@ -31,7 +32,7 @@ export default function CreateCourse() {
     );
     const newCourse = { ...course, lessons: lessons };
     functions.createItem(newCourse, courses);*/
-    functions.createCourse(course);
+    createCourse(course);
   }
 
   const handleClickOpen = () => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import PropTypes from "prop-types";
 
 import Button from "@material-ui/core/Button";
@@ -7,10 +7,10 @@ import DynamicDialog from "../Generic/DynamicDialog";
 import { Typography } from "@material-ui/core";
 
 import { lesson } from "../../api/dataStructures";
-import useLocalStorage from "../../api/useLocalStorage";
+import { DataContext } from "../../api/DataContext";
 
 export default function CreateLesson(props) {
-  const [, functions] = useLocalStorage("courses");
+  const { createLesson } = useContext(DataContext);
   const [open, setOpen] = useState(false);
 
   // adding Students to data by creating a key value pair for each student: {Name: Anwesenheit}
@@ -37,7 +37,7 @@ export default function CreateLesson(props) {
     //newData.push(data);
     console.log("newData in setData:", newData);
     props.setData(newData);*/
-    functions.createLesson(props.item.courseId, lesson);
+    createLesson(props.item.courseId, lesson);
   }
 
   const handleClickOpen = () => {

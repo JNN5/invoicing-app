@@ -1,10 +1,12 @@
 import Layout from "./components/Layout/Layout";
 
+import { DataProvider } from "./api/DataContext";
+
 function App() {
   return (
-    <div className="App">
+    <DataProvider>
       <Layout />
-    </div>
+    </DataProvider>
   );
 }
 

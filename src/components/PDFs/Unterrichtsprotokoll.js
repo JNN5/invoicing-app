@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
@@ -17,7 +17,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 
 import logo from "./Logo Antipolis.png";
 import signature from "./Signature-Tiffy.png";
-import useLocalStorage from "../../api/useLocalStorage";
+import { DataContext } from "../../api/DataContext";
 
 const useStyles = makeStyles((theme) => ({
   filterAndButton: {},
@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
     borderBottomWidth: "1px",
     fontSize: "15px",
     maxWidth: "200px",
-    //height: "120px",
+    height: "120px",
   },
   tableFirstCell: {
     textAlign: "left",
@@ -114,16 +114,19 @@ const useStyles = makeStyles((theme) => ({
     padding: "5px",
     fontSize: "15px",
     width: "70px",
-    //height: "120px",
+    height: "120px",
   },
   input: {
     width: "100%",
     height: "100%",
+    maxHeight: "200px",
     border: "none",
     outline: "none",
     margin: "none",
     padding: "1em, 1.5em",
     resize: "none",
+    fontFamily: "Roboto, Helvetica, Arial, sans-serif",
+    fontSize: "15px",
   },
   saveButton: {
     display: "flex",
@@ -176,10 +179,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function Unterrichtsprotokoll() {
   const classes = useStyles();
-  const [courses] = useLocalStorage("courses");
+  const { courses } = useContext(DataContext);
   const [month, setMonth] = useState(() => {
     const now = new Date();
-    return now.getFullYear() + "-" + now.getMonth() + 1;
+    function getMonth() {
+      let month = "";
+      if (now.getMonth() < 10) month = "0";
+      return (month += now.getMonth());
+    }
+    const month = getMonth();
+    return now.getFullYear() + "-" + month;
   });
 
   const handleMonthChange = (e) => {
@@ -194,7 +203,7 @@ export default function Unterrichtsprotokoll() {
     Freitag: 4,
   };
 
-  const sortedCourses = courses.sort((c1, c2) => {
+  const sortedCourses = courses?.sort((c1, c2) => {
     if (wochentage[c1.Wochentag] < wochentage[c2.Wochentag]) {
       return -1;
     } else if (wochentage[c1.Wochentag] > wochentage[c2.Wochentag]) {
@@ -214,7 +223,7 @@ export default function Unterrichtsprotokoll() {
     }
   });
 
-  const pdfs = sortedCourses.map((course) => {
+  const pdfs = sortedCourses?.map((course) => {
     const filteredLessons = course.lessons?.filter((lesson) =>
       lesson.datum.includes(month)
     );
@@ -239,7 +248,7 @@ export default function Unterrichtsprotokoll() {
       <Print
         //elementId="UnterrichtsprotokollPDF"
         elementId="PDFs"
-        courseIds={sortedCourses.map((c) => c.id)}
+        courseIds={sortedCourses?.map((c) => c.id)}
         documentName={"Minutes_" + month + ".pdf"}
       />
       {/*<MyPDF course={sampleInput} />*/}
@@ -503,13 +512,15 @@ function PrettyTableHeaderCell(props) {
 
 function EditableCell(props) {
   const classes = useStyles();
-  const [, functions] = useLocalStorage("courses");
+  const { updateLesson } = useContext(DataContext);
   const [state, setState] = useState(props.entryValue);
+
+  console.log(props);
 
   const handleClick = () => {
     let lesson = props.lesson;
     lesson[props.entryKey] = state;
-    functions.updateLesson(props.lesson.courseId, props.lesson.id, lesson);
+    updateLesson(props.lesson.courseId, props.lesson.id, lesson);
   };
 
   const handleChange = (e) => {
@@ -519,15 +530,14 @@ function EditableCell(props) {
 
   return (
     <>
-      <Typography variant="inherit" color="initial">
-        <textarea
-          onChange={handleChange}
-          key={"update-" + props.entryKey}
-          value={state}
-          type="text"
-          className={classes.input}
-        ></textarea>
-      </Typography>
+      <textarea
+        onChange={handleChange}
+        key={"update-" + props.entryKey}
+        value={state}
+        type="text"
+        className={classes.input}
+      />
+
       {state === props.entryValue ? (
         <></>
       ) : (

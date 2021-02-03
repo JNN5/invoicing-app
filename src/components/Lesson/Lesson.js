@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import useLocalStorage from "../../api/useLocalStorage";
+import { useContext, useEffect, useState } from "react";
 
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 
 import LessonItem from "./LessonItem";
+import { DataContext } from "../../api/DataContext";
 
 export default function Lesson() {
-  const [courses] = useLocalStorage("courses");
+  const { courses } = useContext(DataContext);
   const [filteredData, setFilteredData] = useState([]);
   const [filter, setFilter] = useState(() => {
     const now = new Date();
@@ -19,6 +19,7 @@ export default function Lesson() {
     const month = getMonth();
     return now.getFullYear() + "-" + month;
   });
+  console.log("Lesson Render");
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);

@@ -1,19 +1,20 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import PropTypes from "prop-types";
 
 import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/DeleteForever";
 
 import DynamicDialog from "../Generic/DynamicDialog";
-import useLocalStorage from "../../api/useLocalStorage";
+import { DataContext } from "../../api/DataContext";
 
 export default function DeleteItem(props) {
-  const [, functions] = useLocalStorage("courses", []);
+  //const [, functions] = useLocalStorage("courses", []);
+  const { deleteCourse } = useContext(DataContext);
   const [open, setOpen] = useState(false);
 
   // filter out deleted item from data array
   function setData() {
-    functions.deleteCourse(props.item.id);
+    deleteCourse(props.item.id);
   }
 
   const handleClickOpen = () => {

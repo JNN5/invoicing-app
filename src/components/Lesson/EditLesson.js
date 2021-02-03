@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import PropTypes from "prop-types";
 
 import { Button, Typography } from "@material-ui/core/";
@@ -7,10 +7,10 @@ import EditIcon from "@material-ui/icons/Edit";
 import DynamicDialog from "../Generic/DynamicDialog";
 
 import { lesson as fieldStructure } from "../../api/dataStructures";
-import useLocalStorage from "../../api/useLocalStorage";
+import { DataContext } from "../../api/DataContext";
 
 export default function EditLesson(props) {
-  const [, functions] = useLocalStorage("courses");
+  const { updateLesson } = useContext(DataContext);
   const [open, setOpen] = useState(false);
 
   let fields = { ...fieldStructure };
@@ -37,7 +37,7 @@ export default function EditLesson(props) {
       updatedCourse,
     ];
     functions.updateItem(updatedCourse, courses);*/
-    functions.updateLesson(props.item.courseId, props.item.id, lesson);
+    updateLesson(props.item.courseId, props.item.id, lesson);
   }
 
   const handleClickOpen = () => {

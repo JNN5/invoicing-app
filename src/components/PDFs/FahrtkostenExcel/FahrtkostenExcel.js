@@ -6,13 +6,13 @@ import TextField from "@material-ui/core/TextField";
 
 import * as stylesStruc from "./stylesAndStructure";
 
-import useLocalStorage from "../../../api/useLocalStorage";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { DataContext } from "../../../api/DataContext";
 
 const KILOMETERKOSTEN = 0.3;
 
 export default function FahrtkostenExcel() {
-  const [courses] = useLocalStorage("courses");
+  const { courses } = useContext(DataContext);
   //const [data, setData] = useState([]);
   const [month, setMonth] = useState(() => {
     const now = new Date();

@@ -1,9 +1,10 @@
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 
-import { default as useStorage } from "../../api/useLocalStorage";
 import CourseItem from "./CourseItem";
 import CreateCourse from "./CreateCourse";
+import { useContext } from "react";
+import { DataContext } from "../../api/DataContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,7 +14,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Courses() {
   const classes = useStyles();
-  const [courses] = useStorage("courses", []);
+  // const [courses] = useLocalStorage("courses", []);
+  const { courses } = useContext(DataContext);
 
   const sortedData = courses?.sort((a, b) => {
     if (a.Kunde.toUpperCase() < b.Kunde.toUpperCase()) return -1;
