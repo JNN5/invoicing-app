@@ -1,5 +1,5 @@
-import { renderHook, act } from "@testing-library/react-hooks";
 import { useContext } from "react";
+import { renderHook, act } from "@testing-library/react-hooks";
 import { DataContext, DataProvider } from "./DataContext";
 
 const sampleCourse = {

@@ -22,7 +22,7 @@ export default function Courses() {
     return 0;
   });
 
-  console.log("Courses render");
+  //console.log("Courses render");
 
   const courseList = sortedData?.map((item) => {
     return <CourseItem key={item.id || JSON.stringify(item)} item={item} />;

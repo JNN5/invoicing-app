@@ -17,13 +17,12 @@ export default function Admin() {
     };
   };
 
-  const courseList = courses.map((c) => (
+  const courseList = courses?.map((c) => (
     <p key={"p" + c.Kursnummer}>{c.Kursnummer}</p>
   ));
 
   let existingCourses = {};
-  courses.map((c) => (existingCourses[c.Kursnummer] = true));
-  console.log("existingCourseIds", existingCourses);
+  courses?.map((c) => (existingCourses[c.Kursnummer] = true));
 
   const buttonList = tmp
     .filter((c) => !existingCourses[c.Kursnummer])
