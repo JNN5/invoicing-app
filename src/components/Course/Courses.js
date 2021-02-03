@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Courses() {
   const classes = useStyles();
-  // const [courses] = useLocalStorage("courses", []);
   const { courses } = useContext(DataContext);
 
   const sortedData = courses?.sort((a, b) => {

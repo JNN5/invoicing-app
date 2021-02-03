@@ -3,29 +3,26 @@ import uuid from "react-uuid";
 
 import { lesson as lessonObjectStructure } from "./dataStructures";
 
-const key = "courses";
-const initialValue = [];
-
-function returnInitialState(key, initialValue) {
+function returnInitialState(storageKey) {
   try {
     // Get from local storage by key
-    const item = window.localStorage.getItem(key);
+    const item = window.localStorage.getItem(storageKey || "courses");
     // Parse stored json or if none return initialValue
-    return item ? JSON.parse(item) : initialValue;
+    return item ? JSON.parse(item) : [];
   } catch (error) {
     // If error also return initialValue
     console.log(error);
-    return initialValue;
+    return [];
   }
 }
 
-export const DataContext = createContext(returnInitialState(key, initialValue));
-export const DataProvider = ({ children }) => {
+export const DataContext = createContext(returnInitialState());
+export const DataProvider = ({ storageKey, children }) => {
   const [storedValue, setStoredValue] = useState(
-    returnInitialState(key, initialValue)
+    returnInitialState(storageKey)
   );
 
-  console.log("DataProvider call", storedValue);
+  //console.log("DataProvider render");
 
   const setValue = (value) => {
     try {
@@ -33,10 +30,10 @@ export const DataProvider = ({ children }) => {
       // Allow value to be a function so we have same API as useState
       const valueToStore =
         value instanceof Function ? value(storedValue) : value;
+      // Save to local storage
+      window.localStorage.setItem(storageKey, JSON.stringify(valueToStore));
       // Save state
       setStoredValue(valueToStore);
-      // Save to local storage
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
       // A more advanced implementation would handle the error case
       console.log(error);
@@ -44,7 +41,7 @@ export const DataProvider = ({ children }) => {
   };
 
   const createCourse = (course) => {
-    console.log("createCourse call", course);
+    //console.log("createCourse call", course);
     if (course && typeof course === "object") {
       if (!course.id) course.id = uuid();
       // generate a lesson per week if the course has a start and end date
@@ -60,17 +57,22 @@ export const DataProvider = ({ children }) => {
       if (storedValue) {
         setValue([...storedValue, course]);
       } else {
-        setValue([course]);
+        setValue([{ ...course }]);
       }
     } else {
+      console.log("Parameters: ", course);
       throw new Error("missing or wrong parameters");
     }
   };
 
   const updateCourse = (id, course) => {
     if (id && course && typeof course === "object") {
-      setValue([...storedValue.filter((c) => c.id !== id), course]);
+      setValue([
+        ...storedValue.filter((c) => c.id !== id),
+        { id: id, ...course },
+      ]);
     } else {
+      console.log("Parameters: ", id, course);
       throw new Error("missing or wrong parameters");
     }
   };
@@ -79,6 +81,7 @@ export const DataProvider = ({ children }) => {
     if (id) {
       setValue([...storedValue.filter((c) => c.id !== id)]);
     } else {
+      console.log("Parameters: ", id);
       throw new Error("missing or wrong parameters");
     }
   };
@@ -87,6 +90,7 @@ export const DataProvider = ({ children }) => {
     if (id) {
       return storedValue.filter((c) => c.id === id)[0];
     } else {
+      console.log("Parameters: ", id);
       throw new Error("missing or wrong parameters");
     }
   };
@@ -125,6 +129,7 @@ export const DataProvider = ({ children }) => {
       }
       return lessons;
     } else {
+      console.log("Parameters: ", fromDate, toDate, course);
       throw new Error("missing or wrong parameters");
     }
   };
@@ -142,6 +147,7 @@ export const DataProvider = ({ children }) => {
         lessons: lessons,
       });
     } else {
+      console.log("Parameters: ", courseId, lesson);
       throw new Error("missing or wrong parameters");
     }
   };
@@ -151,9 +157,13 @@ export const DataProvider = ({ children }) => {
       const course = getCourse(courseId);
       updateCourse(courseId, {
         ...course,
-        lessons: [...course.lessons.filter((l) => l.id !== lessonId), lesson],
+        lessons: [
+          ...course.lessons.filter((l) => l.id !== lessonId),
+          { id: lessonId, ...lesson },
+        ],
       });
     } else {
+      console.log("Parameters: ", courseId, lessonId, lesson);
       throw new Error("missing or wrong parameters");
     }
   };
@@ -166,6 +176,7 @@ export const DataProvider = ({ children }) => {
         lessons: course.lessons.filter((l) => l.id !== lessonId),
       });
     } else {
+      console.log("Parameters: ", courseId, lessonId);
       throw new Error("missing or wrong parameters");
     }
   };
@@ -175,6 +186,7 @@ export const DataProvider = ({ children }) => {
       const course = getCourse(courseId);
       return course.lessons.filter((l) => l.id === lessonId)[0];
     } else {
+      console.log("Parameters: ", courseId, lessonId);
       throw new Error("missing or wrong parameters");
     }
   };
@@ -184,6 +196,7 @@ export const DataProvider = ({ children }) => {
       const course = getCourse(courseId);
       return course.lessons;
     } else {
+      console.log("Parameters: ", courseId);
       throw new Error("missing or wrong parameters");
     }
   };

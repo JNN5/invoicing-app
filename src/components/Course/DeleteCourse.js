@@ -8,11 +8,9 @@ import DynamicDialog from "../Generic/DynamicDialog";
 import { DataContext } from "../../api/DataContext";
 
 export default function DeleteItem(props) {
-  //const [, functions] = useLocalStorage("courses", []);
   const { deleteCourse } = useContext(DataContext);
   const [open, setOpen] = useState(false);
 
-  // filter out deleted item from data array
   function setData() {
     deleteCourse(props.item.id);
   }

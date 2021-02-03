@@ -5,7 +5,6 @@ import { useContext } from "react";
 import { DataContext } from "../../api/DataContext";
 
 export default function Admin() {
-  //const [, functions] = useLocalStorage("courses");
   const { courses, restoreData, createCourse, backupData } = useContext(
     DataContext
   );
@@ -17,6 +16,27 @@ export default function Admin() {
       restoreData(e.target.result);
     };
   };
+
+  const courseList = courses.map((c) => (
+    <p key={"p" + c.Kursnummer}>{c.Kursnummer}</p>
+  ));
+
+  let existingCourses = {};
+  courses.map((c) => (existingCourses[c.Kursnummer] = true));
+  console.log("existingCourseIds", existingCourses);
+
+  const buttonList = tmp
+    .filter((c) => !existingCourses[c.Kursnummer])
+    .map((course) => (
+      <Button
+        key={"btn" + course.Kursnummer}
+        onClick={() => {
+          createCourse(course);
+        }}
+      >
+        create {course.Kursnummer}
+      </Button>
+    ));
 
   return (
     <div>
@@ -39,19 +59,8 @@ export default function Admin() {
       >
         <Button variant="contained">Upload backup to restore</Button>
       </FilePicker>
-      {courses.map((c) => (
-        <p>{c.Kursnummer}</p>
-      ))}
-      {tmp.map((course) => (
-        <Button
-          key={"btn" + course.id}
-          onClick={() => {
-            createCourse(course);
-          }}
-        >
-          create {course.Kursnummer}
-        </Button>
-      ))}
+      <div key="admin-courseList">{courseList}</div>
+      <div key="admin-buttonList">{buttonList}</div>
     </div>
   );
 }
@@ -67,6 +76,7 @@ const tmp = [
     Ende_Datum: "2021-04-27",
     Buch: "Insurance Matters",
     Km: "28",
+    honorar: "28",
     "Student 0": "Miles Westphal",
     "Student 1": "Jana Hartmann",
     "Student 2": "Luca Többens",
@@ -83,10 +93,12 @@ const tmp = [
     Kunde: "ARI Armaturen",
     Niveau: "B1",
     Wochentag: "Montag",
+    Zeit: "09:00",
     Start_Datum: "2021-01-04",
     Ende_Datum: "2021-12-31",
     Buch: "-",
     Km: "58",
+    honorar: "28",
     "Student 0": "Pia Böckmann",
     "Student 1": "Julia Brock",
     "Student 2": "Luis Brüseke",
@@ -112,6 +124,7 @@ const tmp = [
     Ende_Datum: "2021-12-31",
     Buch: "-",
     Km: "58",
+    honorar: "28",
     "Student 0": "Björn Sander",
     "Student 1": "Yannick Bollweg",
     "Student 2": "Luca Dreisöner",
@@ -132,6 +145,7 @@ const tmp = [
     Ende_Datum: "2021-12-31",
     Buch: "-",
     Km: "58",
+    honorar: "28",
     "Student 0": "Lars Meier",
     "Student 1": "Philipp Möller",
     "Student 2": "Marcel Müchler",
@@ -157,6 +171,7 @@ const tmp = [
     Ende_Datum: "2021-12-31",
     Buch: "Business English for Beginners",
     Km: "63",
+    honorar: "28",
     "Student 0": "Alexander Kraft",
     "Student 1": "Christian Sundermeier",
     "Student 2": "Uwe Hetland",
@@ -174,6 +189,7 @@ const tmp = [
     Ende_Datum: "2021-12-31",
     Buch: "Business English for Beginners",
     Km: "98",
+    honorar: "28",
     "Student 0": "Anna Berg",
     "Student 1": "Stefanie Boese",
     "Student 2": "Jennifer Cub",
@@ -195,6 +211,7 @@ const tmp = [
     Ende_Datum: "2021-12-31",
     Buch: "In Company 3.0 Elementary",
     Km: "26",
+    honorar: "28",
     "Student 0": "Simone Bekk",
     "Student 1": "Annette Fröner",
     "Student 2": "Beytullah Sahin",
@@ -214,6 +231,7 @@ const tmp = [
     Ende_Datum: "2021-12-31",
     Buch: "Insurance Matters",
     Km: "28",
+    honorar: "28",
     "Student 0": "Christian Kück",
     "Student 1": "Tobias Brandt",
     "Student 2": "Jan Rott",
@@ -240,6 +258,7 @@ const tmp = [
     Ende_Datum: "2021-12-31",
     Buch: "Basis for Business",
     Km: "98",
+    honorar: "28",
     "Student 0": "Kristin Große",
     "Student 1": "Tristan Merk",
     "Student 2": "Andreas Thiel",
@@ -256,6 +275,7 @@ const tmp = [
     Ende_Datum: "2021-12-31",
     Km: "28",
     Zeit: "15:15",
+    honorar: "28",
     "Student 0": "Danicia Brungs",
     "Student 1": "Daniel Reicheld",
     "Student 2": "Anika Bartodziej",
@@ -278,6 +298,7 @@ const tmp = [
     Ende_Datum: "2021-12-31",
     Buch: "Insurance Matters",
     Km: "28",
+    honorar: "28",
     "Student 0": "Tom Hering",
     "Student 1": "Florian Schönlau",
     "Student 2": "Nico Busekros",
@@ -322,6 +343,7 @@ const tmp = [
     Ende_Datum: "2021-12-31",
     Buch: "Business Result",
     Km: "6",
+    honorar: "28",
     "Student 0": "Matthias Eßbach",
     "Student 1": "Boris Haubrich",
     "Student 2": "Nico Horstmann",

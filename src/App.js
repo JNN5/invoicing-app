@@ -4,7 +4,7 @@ import { DataProvider } from "./api/DataContext";
 
 function App() {
   return (
-    <DataProvider>
+    <DataProvider storageKey="courses">
       <Layout />
     </DataProvider>
   );

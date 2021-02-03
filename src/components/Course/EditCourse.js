@@ -9,7 +9,6 @@ import { courses as fields } from "../../api/dataStructures";
 import { DataContext } from "../../api/DataContext";
 
 export default function EditItem(props) {
-  //const [, functions] = useLocalStorage("courses", []);
   const { updateCourse } = useContext(DataContext);
   const [open, setOpen] = useState(false);
 

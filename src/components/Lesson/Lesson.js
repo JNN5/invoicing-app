@@ -19,7 +19,7 @@ export default function Lesson() {
     const month = getMonth();
     return now.getFullYear() + "-" + month;
   });
-  console.log("Lesson Render");
+  //console.log("Lesson Render");
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);

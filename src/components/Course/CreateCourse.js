@@ -18,20 +18,10 @@ const useStyles = makeStyles((theme) => ({
 export default function CreateCourse() {
   const classes = useStyles();
 
-  //const [, functions] = useLocalStorage("courses", []);
   const { createCourse } = useContext(DataContext);
   const [open, setOpen] = useState(false);
 
-  // make sure new data are added to state
   function setData(course) {
-    // create a lesson for each week within the defined dates
-    /*const lessons = createLessons(
-      course.Start_Datum,
-      course.Ende_Datum,
-      course
-    );
-    const newCourse = { ...course, lessons: lessons };
-    functions.createItem(newCourse, courses);*/
     createCourse(course);
   }
 

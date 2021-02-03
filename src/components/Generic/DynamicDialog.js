@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import PropTypes from "prop-types";
 
 import { v4 as uuid } from "uuid";
@@ -15,7 +15,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 
 import AddIcon from "@material-ui/icons/Add";
 
-import { default as useStorage } from "../../api/useLocalStorage";
 import {
   FormControl,
   Grid,
@@ -23,6 +22,7 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
+import { DataContext } from "../../api/DataContext";
 
 export default function DynamicDialog(props) {
   const [error, setError] = useState();
@@ -102,7 +102,7 @@ export default function DynamicDialog(props) {
 }
 
 function Field(props) {
-  const [data] = useStorage(props.field.db || "");
+  const { data } = useContext(DataContext);
 
   function handleChange(event) {
     const newValue = event.target.value;
