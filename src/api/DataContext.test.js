@@ -94,6 +94,9 @@ test("Data Context - test course functions", () => {
   // make sure id's are realy unique
   expect(courses[0].id === courses[1].id).toBeFalsy();
 
+  // Check for error, when Parameters are wrong
+  expect(() => functions.createCourse()).toThrow();
+
   // ---
   // update lesson
   // --
@@ -115,6 +118,9 @@ test("Data Context - test course functions", () => {
   expect(courses[1].id).not.toBeNull();
   expect(courses.length).toBe(2);
 
+  // Check for error, when Parameters are wrong
+  expect(() => functions.updateourse()).toThrow();
+
   // ---
   // get frist course
   // ---
@@ -123,6 +129,9 @@ test("Data Context - test course functions", () => {
 
   isObject1InObject2(courses[0], course);
   expect(typeof course === "object").toBe(true);
+
+  // Check for error, when Parameters are wrong
+  expect(() => functions.getcourse()).toThrow();
 
   // list courses
   // ---
@@ -143,6 +152,9 @@ test("Data Context - test course functions", () => {
   functions = result.current;
 
   expect(courses.length).toBe(1);
+
+  // Check for error, when Parameters are wrong
+  expect(() => functions.deletecourse()).toThrow();
 });
 
 test("Data Context - test lesson functions", () => {
@@ -182,6 +194,9 @@ test("Data Context - test lesson functions", () => {
   expect(lesson.id).not.toBeNull();
   expect(lesson.courseId).toBe(courses[0].id);
 
+  // Check for error, when Parameters are wrong
+  expect(() => functions.createLesson()).toThrow();
+
   // ---
   // update lesson
   // --
@@ -203,6 +218,9 @@ test("Data Context - test lesson functions", () => {
   expect(updatedLesson.id).not.toBeNull();
   expect(updatedLesson.courseId).toBe(courses[0].id);
 
+  // Check for error, when Parameters are wrong
+  expect(() => functions.updateLesson()).toThrow();
+
   // ---
   // get first lesson
   // ---
@@ -210,6 +228,9 @@ test("Data Context - test lesson functions", () => {
   const retrievedLesson = functions.getLesson(courses[0].id, updatedLesson.id);
 
   isObject1InObject2(updatedLessonSample, retrievedLesson);
+
+  // Check for error, when Parameters are wrong
+  expect(() => functions.getLesson()).toThrow();
 
   // ---
   // list lessons
@@ -219,6 +240,9 @@ test("Data Context - test lesson functions", () => {
 
   expect(Array.isArray(lessonList)).toBe(true);
   courses[0].lessons.forEach((l, i) => isObject1InObject2(l, lessonList[i]));
+
+  // Check for error, when Parameters are wrong
+  expect(() => functions.listLessons()).toThrow();
 
   // ---
   // delete lesson
@@ -231,6 +255,9 @@ test("Data Context - test lesson functions", () => {
   functions = result.current;
 
   expect(lessonList.length - courses[0].lessons.length).toBe(1);
+
+  // Check for error, when Parameters are wrong
+  expect(() => functions.deleteLesson()).toThrow();
 });
 
 test("Data Context - test backup & restore functions", () => {
@@ -279,6 +306,9 @@ test("Data Context - test backup & restore functions", () => {
   restoredCourses.forEach((course, index) =>
     isObject1InObject2(course, stateBeforeBackup[index])
   );
+
+  // Check for error, when Parameters are wrong
+  expect(() => functions.restoreData()).toThrow();
 });
 
 function isObject1InObject2(o1, o2) {
